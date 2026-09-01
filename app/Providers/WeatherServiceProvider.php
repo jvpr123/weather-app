@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Contracts\Cache\WeatherCache;
 use App\Contracts\Weather\CurrentWeatherProvider;
 use App\Contracts\Weather\ForecastProvider;
 use App\Contracts\Weather\GeocodingProvider;
 use App\Integrations\OpenWeather\OpenWeatherClient;
+use App\Integrations\Redis\RedisWeatherCache;
+use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use LogicException;
@@ -33,6 +36,28 @@ final class WeatherServiceProvider extends ServiceProvider
             retryTimes: (int) ($configuration['retry_times'] ?? 3),
             retryDelayMilliseconds: (int) ($configuration['retry_delay_ms'] ?? 200),
         ));
+
+        $this->app->singleton(WeatherCache::class, function (Application $app): WeatherCache {
+            $store = $app['config']->get('weather.cache.store', 'redis');
+
+            if (! is_string($store) || trim($store) === '') {
+                throw new LogicException('The configured weather cache store must be a non-empty string.');
+            }
+
+            return new RedisWeatherCache(
+                $app->make(CacheFactory::class)->store($store),
+            );
+        });
+
+        $this->app->when($driver)
+            ->needs('$geocodingTtl')
+            ->give(fn (): int => max(1, (int) $this->app['config']->get('weather.cache.geocoding_ttl', 1800)));
+        $this->app->when($driver)
+            ->needs('$currentWeatherTtl')
+            ->give(fn (): int => max(1, (int) $this->app['config']->get('weather.cache.current_ttl', 600)));
+        $this->app->when($driver)
+            ->needs('$forecastTtl')
+            ->give(fn (): int => max(1, (int) $this->app['config']->get('weather.cache.forecast_ttl', 1800)));
 
         $this->app->singleton($driver);
 

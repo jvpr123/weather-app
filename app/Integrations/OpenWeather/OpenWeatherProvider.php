@@ -2,6 +2,7 @@
 
 namespace App\Integrations\OpenWeather;
 
+use App\Contracts\Cache\WeatherCache;
 use App\Contracts\Weather\CurrentWeatherProvider;
 use App\Contracts\Weather\ForecastProvider;
 use App\Contracts\Weather\GeocodingProvider;
@@ -11,20 +12,37 @@ use App\DTOs\Weather\CurrentWeatherData;
 use App\DTOs\Weather\ForecastData;
 use App\DTOs\Weather\ForecastPeriodData;
 use App\Exceptions\WeatherProviderException;
+use Closure;
 
 final readonly class OpenWeatherProvider implements CurrentWeatherProvider, ForecastProvider, GeocodingProvider
 {
     public function __construct(
         private OpenWeatherClient $client,
+        private WeatherCache $cache,
+        private int $geocodingTtl = 1800,
+        private int $currentWeatherTtl = 600,
+        private int $forecastTtl = 1800,
     ) {}
 
     /** @return list<LocationData> */
     public function search(string $query, int $limit = 5): array
     {
-        $payload = $this->client->get('/geo/1.0/direct', [
-            'q' => trim($query),
-            'limit' => max(1, min($limit, 5)),
-        ]);
+        $query = trim($query);
+        $limit = max(1, min($limit, 5));
+        $cacheKey = 'weather:geo:'.hash('sha256', mb_strtolower("search|{$query}|{$limit}"));
+        $payload = $this->remember($cacheKey, $this->geocodingTtl, function () use ($query, $limit): array {
+            $payload = $this->client->get('/geo/1.0/direct', [
+                'q' => $query,
+                'limit' => $limit,
+            ]);
+
+            array_map(
+                fn (mixed $location): LocationData => $this->mapLocation($location),
+                array_values($payload),
+            );
+
+            return $payload;
+        });
 
         return array_map(
             fn (mixed $location): LocationData => $this->mapLocation($location),
@@ -34,11 +52,26 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
 
     public function reverse(Coordinates $coordinates): ?LocationData
     {
-        $payload = $this->client->get('/geo/1.0/reverse', [
-            'lat' => $coordinates->latitude,
-            'lon' => $coordinates->longitude,
-            'limit' => 1,
-        ]);
+        $coordinateKey = $this->coordinateKey($coordinates);
+        $cacheKey = 'weather:geo:'.hash('sha256', "reverse|{$coordinateKey}");
+        $payload = $this->remember($cacheKey, $this->geocodingTtl, function () use ($coordinates): array {
+            $payload = $this->client->get('/geo/1.0/reverse', [
+                'lat' => $coordinates->latitude,
+                'lon' => $coordinates->longitude,
+                'limit' => 1,
+            ]);
+
+            $this->mapReverseLocation($payload);
+
+            return $payload;
+        });
+
+        return $this->mapReverseLocation($payload);
+    }
+
+    /** @param array<array-key, mixed> $payload */
+    private function mapReverseLocation(array $payload): ?LocationData
+    {
 
         if ($payload === []) {
             return null;
@@ -53,24 +86,38 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
 
     public function current(Coordinates $coordinates): CurrentWeatherData
     {
-        $payload = $this->client->get('/data/2.5/weather', [
-            'lat' => $coordinates->latitude,
-            'lon' => $coordinates->longitude,
-            'units' => 'metric',
-            'lang' => 'pt_br',
-        ]);
+        $cacheKey = 'weather:current:'.$this->coordinateKey($coordinates);
+        $payload = $this->remember($cacheKey, $this->currentWeatherTtl, function () use ($coordinates): array {
+            $payload = $this->client->get('/data/2.5/weather', [
+                'lat' => $coordinates->latitude,
+                'lon' => $coordinates->longitude,
+                'units' => 'metric',
+                'lang' => 'pt_br',
+            ]);
+
+            $this->mapCurrentWeather($payload);
+
+            return $payload;
+        });
 
         return $this->mapCurrentWeather($payload);
     }
 
     public function forecast(Coordinates $coordinates): ForecastData
     {
-        $payload = $this->client->get('/data/2.5/forecast', [
-            'lat' => $coordinates->latitude,
-            'lon' => $coordinates->longitude,
-            'units' => 'metric',
-            'lang' => 'pt_br',
-        ]);
+        $cacheKey = 'weather:forecast:'.$this->coordinateKey($coordinates);
+        $payload = $this->remember($cacheKey, $this->forecastTtl, function () use ($coordinates): array {
+            $payload = $this->client->get('/data/2.5/forecast', [
+                'lat' => $coordinates->latitude,
+                'lon' => $coordinates->longitude,
+                'units' => 'metric',
+                'lang' => 'pt_br',
+            ]);
+
+            $this->mapForecast($payload);
+
+            return $payload;
+        });
 
         return $this->mapForecast($payload);
     }
@@ -224,5 +271,28 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         }
 
         return true;
+    }
+
+    /**
+     * @param  Closure(): array<array-key, mixed>  $callback
+     * @return array<array-key, mixed>
+     */
+    private function remember(string $key, int $ttl, Closure $callback): array
+    {
+        $payload = $this->cache->remember($key, max(1, $ttl), $callback);
+
+        if (! is_array($payload)) {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        return $payload;
+    }
+
+    private function coordinateKey(Coordinates $coordinates): string
+    {
+        $latitude = abs($coordinates->latitude) < 0.0000005 ? 0.0 : $coordinates->latitude;
+        $longitude = abs($coordinates->longitude) < 0.0000005 ? 0.0 : $coordinates->longitude;
+
+        return number_format($latitude, 6, '.', '').':'.number_format($longitude, 6, '.', '');
     }
 }

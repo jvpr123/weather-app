@@ -5,6 +5,9 @@ use App\DTOs\Weather\CurrentWeatherData;
 use App\Exceptions\WeatherProviderException;
 use App\Integrations\OpenWeather\OpenWeatherClient;
 use App\Integrations\OpenWeather\OpenWeatherProvider;
+use App\Integrations\Redis\RedisWeatherCache;
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Cache\Repository;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -17,12 +20,15 @@ beforeEach(function () {
 
 function currentWeatherProvider(): OpenWeatherProvider
 {
-    return new OpenWeatherProvider(new OpenWeatherClient(
-        apiKey: 'test-api-key',
-        baseUrl: 'https://api.openweathermap.test',
-        retryTimes: 1,
-        retryDelayMilliseconds: 0,
-    ));
+    return new OpenWeatherProvider(
+        client: new OpenWeatherClient(
+            apiKey: 'test-api-key',
+            baseUrl: 'https://api.openweathermap.test',
+            retryTimes: 1,
+            retryDelayMilliseconds: 0,
+        ),
+        cache: new RedisWeatherCache(new Repository(new ArrayStore)),
+    );
 }
 
 function currentWeatherPayload(): array

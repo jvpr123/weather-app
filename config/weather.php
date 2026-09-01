@@ -5,6 +5,13 @@ use App\Integrations\OpenWeather\OpenWeatherProvider;
 return [
     'provider' => env('WEATHER_PROVIDER', 'openweather'),
 
+    'cache' => [
+        'store' => env('WEATHER_CACHE_STORE', 'redis'),
+        'geocoding_ttl' => (int) env('WEATHER_GEOCODING_CACHE_TTL', 1800),
+        'current_ttl' => (int) env('WEATHER_CURRENT_CACHE_TTL', 600),
+        'forecast_ttl' => (int) env('WEATHER_FORECAST_CACHE_TTL', 1800),
+    ],
+
     'providers' => [
         'openweather' => [
             'driver' => OpenWeatherProvider::class,
