@@ -29,6 +29,25 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         );
     }
 
+    public function reverse(Coordinates $coordinates): ?LocationData
+    {
+        $payload = $this->client->get('/geo/1.0/reverse', [
+            'lat' => $coordinates->latitude,
+            'lon' => $coordinates->longitude,
+            'limit' => 1,
+        ]);
+
+        if ($payload === []) {
+            return null;
+        }
+
+        if (! array_is_list($payload) || count($payload) !== 1) {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        return $this->mapLocation($payload[0]);
+    }
+
     private function mapLocation(mixed $location): LocationData
     {
         if (! is_array($location)

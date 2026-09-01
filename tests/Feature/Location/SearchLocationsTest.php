@@ -21,6 +21,11 @@ function fakeGeocodingProvider(array $locations = []): GeocodingProvider
 
             return $this->locations;
         }
+
+        public function reverse(Coordinates $coordinates): ?LocationData
+        {
+            return null;
+        }
     };
 }
 
@@ -81,6 +86,11 @@ it('does not expose provider failures in the public response', function () {
         public function search(string $query, int $limit = 5): array
         {
             throw WeatherProviderException::unavailable(500);
+        }
+
+        public function reverse(Coordinates $coordinates): ?LocationData
+        {
+            return null;
         }
     });
 

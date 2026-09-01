@@ -1,5 +1,6 @@
 <?php
 
+use App\DTOs\Location\Coordinates;
 use App\DTOs\Location\LocationData;
 use App\Exceptions\WeatherProviderException;
 use App\Integrations\OpenWeather\OpenWeatherClient;
@@ -70,6 +71,54 @@ it('caps the external result limit', function () {
 
     Http::assertSent(fn (Request $request): bool => str_contains($request->url(), 'limit=5'));
 });
+
+it('normalizes an OpenWeather reverse geocoding result', function () {
+    Http::fake([
+        '*' => Http::response([[
+            'name' => 'São Paulo',
+            'state' => 'São Paulo',
+            'country' => 'br',
+            'lat' => -23.5505,
+            'lon' => -46.6333,
+        ]]),
+    ]);
+
+    $location = geocodingProvider()->reverse(new Coordinates(-23.5505, -46.6333));
+
+    expect($location?->toArray())->toBe([
+        'name' => 'São Paulo',
+        'state' => 'São Paulo',
+        'country' => 'BR',
+        'latitude' => -23.5505,
+        'longitude' => -46.6333,
+    ]);
+
+    Http::assertSent(fn (Request $request): bool => str_contains($request->url(), '/geo/1.0/reverse?')
+        && str_contains($request->url(), 'lat=-23.5505')
+        && str_contains($request->url(), 'lon=-46.6333')
+        && str_contains($request->url(), 'limit=1')
+    );
+});
+
+it('returns null when reverse geocoding finds no location', function () {
+    Http::fake(['*' => Http::response([])]);
+
+    expect(geocodingProvider()->reverse(new Coordinates(0, 0)))->toBeNull();
+});
+
+it('rejects malformed reverse geocoding payloads', function (array $payload) {
+    Http::fake(['*' => Http::response($payload)]);
+
+    expect(fn () => geocodingProvider()->reverse(new Coordinates(51.5, -0.12)))
+        ->toThrow(WeatherProviderException::class, 'invalid response');
+})->with([
+    'not a list' => [['name' => 'London']],
+    'more than one result' => [
+        ['name' => 'London', 'country' => 'GB', 'lat' => 51.5, 'lon' => -0.12],
+        ['name' => 'London', 'country' => 'CA', 'lat' => 42.98, 'lon' => -81.25],
+    ],
+    'malformed location' => [[['name' => 'London', 'country' => 'GB']]],
+]);
 
 it('rejects malformed geocoding payloads', function (array $payload) {
     Http::fake(['*' => Http::response($payload)]);

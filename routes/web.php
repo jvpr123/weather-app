@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Location\ReverseGeocodeController;
 use App\Http\Controllers\Location\SearchLocationsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -10,3 +11,6 @@ Route::get('/', function () {
 
 Route::get('/locations/search', SearchLocationsController::class)
     ->name('locations.search');
+
+Route::get('/locations/reverse', ReverseGeocodeController::class)
+    ->name('locations.reverse');
