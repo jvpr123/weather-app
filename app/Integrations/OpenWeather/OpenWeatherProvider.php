@@ -7,6 +7,7 @@ use App\Contracts\Weather\ForecastProvider;
 use App\Contracts\Weather\GeocodingProvider;
 use App\DTOs\Location\Coordinates;
 use App\DTOs\Location\LocationData;
+use App\DTOs\Weather\CurrentWeatherData;
 use App\Exceptions\WeatherProviderException;
 
 final readonly class OpenWeatherProvider implements CurrentWeatherProvider, ForecastProvider, GeocodingProvider
@@ -48,6 +49,18 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         return $this->mapLocation($payload[0]);
     }
 
+    public function current(Coordinates $coordinates): CurrentWeatherData
+    {
+        $payload = $this->client->get('/data/2.5/weather', [
+            'lat' => $coordinates->latitude,
+            'lon' => $coordinates->longitude,
+            'units' => 'metric',
+            'lang' => 'pt_br',
+        ]);
+
+        return $this->mapCurrentWeather($payload);
+    }
+
     private function mapLocation(mixed $location): LocationData
     {
         if (! is_array($location)
@@ -70,5 +83,67 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
                 longitude: (float) $location['lon'],
             ),
         );
+    }
+
+    /** @param array<array-key, mixed> $payload */
+    private function mapCurrentWeather(array $payload): CurrentWeatherData
+    {
+        $main = $payload['main'] ?? null;
+        $wind = $payload['wind'] ?? null;
+        $system = $payload['sys'] ?? null;
+        $weather = $payload['weather'] ?? null;
+        $condition = is_array($weather) && array_is_list($weather)
+            ? ($weather[0] ?? null)
+            : null;
+
+        if (! is_array($main)
+            || ! is_array($wind)
+            || ! is_array($system)
+            || ! is_array($condition)
+            || ! $this->hasNumericValues($main, ['temp', 'feels_like', 'temp_min', 'temp_max', 'humidity', 'pressure'])
+            || ! $this->hasNumericValues($wind, ['speed'])
+            || ! $this->hasNumericValues($system, ['sunrise', 'sunset'])
+            || ! $this->hasNumericValues($payload, ['dt'])
+            || ! is_numeric($condition['id'] ?? null)
+            || ! is_string($condition['main'] ?? null)
+            || trim($condition['main']) === ''
+            || ! is_string($condition['description'] ?? null)
+            || trim($condition['description']) === ''
+            || ! is_string($condition['icon'] ?? null)
+            || trim($condition['icon']) === '') {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        return new CurrentWeatherData(
+            temperature: (float) $main['temp'],
+            feelsLike: (float) $main['feels_like'],
+            minTemperature: (float) $main['temp_min'],
+            maxTemperature: (float) $main['temp_max'],
+            humidity: (int) $main['humidity'],
+            pressure: (int) $main['pressure'],
+            windSpeed: (float) $wind['speed'],
+            weatherCode: (int) $condition['id'],
+            condition: trim($condition['main']),
+            description: trim($condition['description']),
+            icon: trim($condition['icon']),
+            sunrise: (int) $system['sunrise'],
+            sunset: (int) $system['sunset'],
+            timestamp: (int) $payload['dt'],
+        );
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $payload
+     * @param  list<string>  $keys
+     */
+    private function hasNumericValues(array $payload, array $keys): bool
+    {
+        foreach ($keys as $key) {
+            if (! is_numeric($payload[$key] ?? null)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
