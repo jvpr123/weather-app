@@ -18,6 +18,7 @@ function period(
         maxTemperature: $maximum,
         condition: $condition,
         weatherCode: 800,
+        isDaytime: true,
         probabilityOfPrecipitation: $rainProbability,
         windSpeed: 2.5,
     );

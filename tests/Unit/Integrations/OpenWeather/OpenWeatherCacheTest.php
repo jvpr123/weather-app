@@ -89,6 +89,7 @@ it('caches forecast by normalized coordinates', function () {
             'weather' => [[
                 'id' => 801,
                 'main' => 'Clouds',
+                'icon' => '02d',
             ]],
             'wind' => ['speed' => 2.8],
             'pop' => 0.15,

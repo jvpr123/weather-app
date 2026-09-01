@@ -11,11 +11,12 @@ final readonly class ForecastPeriodData
         public float $maxTemperature,
         public string $condition,
         public int $weatherCode,
+        public bool $isDaytime,
         public float $probabilityOfPrecipitation,
         public float $windSpeed,
     ) {}
 
-    /** @return array<string, float|int|string> */
+    /** @return array<string, bool|float|int|string> */
     public function toArray(): array
     {
         return [
@@ -25,6 +26,7 @@ final readonly class ForecastPeriodData
             'maxTemperature' => $this->maxTemperature,
             'condition' => $this->condition,
             'weatherCode' => $this->weatherCode,
+            'isDaytime' => $this->isDaytime,
             'probabilityOfPrecipitation' => $this->probabilityOfPrecipitation,
             'windSpeed' => $this->windSpeed,
         ];

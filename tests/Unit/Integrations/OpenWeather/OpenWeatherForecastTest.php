@@ -45,6 +45,7 @@ function forecastPayload(): array
                 'weather' => [[
                     'id' => 801,
                     'main' => 'Clouds',
+                    'icon' => '02d',
                 ]],
                 'wind' => ['speed' => 2.8],
                 'pop' => 0.15,
@@ -59,6 +60,7 @@ function forecastPayload(): array
                 'weather' => [[
                     'id' => 500,
                     'main' => 'Rain',
+                    'icon' => '10n',
                 ]],
                 'wind' => ['speed' => 4.1],
                 'pop' => 0.72,
@@ -83,6 +85,7 @@ it('normalizes three-hour forecast periods without daily aggregation', function 
                     'maxTemperature' => 25.3,
                     'condition' => 'Clouds',
                     'weatherCode' => 801,
+                    'isDaytime' => true,
                     'probabilityOfPrecipitation' => 0.15,
                     'windSpeed' => 2.8,
                 ],
@@ -93,6 +96,7 @@ it('normalizes three-hour forecast periods without daily aggregation', function 
                     'maxTemperature' => 23.1,
                     'condition' => 'Rain',
                     'weatherCode' => 500,
+                    'isDaytime' => false,
                     'probabilityOfPrecipitation' => 0.72,
                     'windSpeed' => 4.1,
                 ],
@@ -140,4 +144,5 @@ it('rejects malformed forecast responses', function (Closure $mutate) {
     },
     'invalid precipitation probability' => fn (array &$payload) => $payload['list'][0]['pop'] = 1.1,
     'missing period condition' => fn (array &$payload) => $payload['list'][0]['weather'] = [],
+    'invalid period icon' => fn (array &$payload) => $payload['list'][0]['weather'][0]['icon'] = 'cloudy',
 ]);

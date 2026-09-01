@@ -236,7 +236,9 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
             || ! $this->hasNumericValues($wind, ['speed'])
             || ! is_numeric($condition['id'] ?? null)
             || ! is_string($condition['main'] ?? null)
-            || trim($condition['main']) === '') {
+            || trim($condition['main']) === ''
+            || ! is_string($condition['icon'] ?? null)
+            || ! preg_match('/^[0-9]{2}[dn]$/', $condition['icon'])) {
             throw WeatherProviderException::invalidResponse();
         }
 
@@ -253,6 +255,7 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
             maxTemperature: (float) $main['temp_max'],
             condition: trim($condition['main']),
             weatherCode: (int) $condition['id'],
+            isDaytime: str_ends_with($condition['icon'], 'd'),
             probabilityOfPrecipitation: $probabilityOfPrecipitation,
             windSpeed: (float) $wind['speed'],
         );

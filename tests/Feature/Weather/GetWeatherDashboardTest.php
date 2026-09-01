@@ -44,6 +44,7 @@ function bindDashboardWeatherProviders(): void
                     maxTemperature: 31.1,
                     condition: 'Clear',
                     weatherCode: 800,
+                    isDaytime: true,
                     probabilityOfPrecipitation: 0.1,
                     windSpeed: 3.4,
                 ),

@@ -37,6 +37,7 @@ it('orchestrates providers and domain services into a dashboard DTO', function (
         maxTemperature: 31.1,
         condition: 'Clear',
         weatherCode: 800,
+        isDaytime: true,
         probabilityOfPrecipitation: 0.1,
         windSpeed: 3.4,
     );

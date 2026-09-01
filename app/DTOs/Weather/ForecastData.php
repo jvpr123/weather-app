@@ -10,7 +10,7 @@ final readonly class ForecastData
         public int $timezoneOffset,
     ) {}
 
-    /** @return array{periods: list<array<string, float|int|string>>, timezoneOffset: int} */
+    /** @return array{periods: list<array<string, bool|float|int|string>>, timezoneOffset: int} */
     public function toArray(): array
     {
         return [
