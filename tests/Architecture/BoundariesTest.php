@@ -10,3 +10,10 @@ arch('controllers do not depend on weather infrastructure or the HTTP client')
 arch('weather contracts do not depend on infrastructure')
     ->expect('App\Contracts\Weather')
     ->not->toUse('App\Integrations');
+
+arch('actions depend on abstractions instead of weather infrastructure')
+    ->expect('App\Actions')
+    ->not->toUse([
+        'App\Integrations',
+        'Illuminate\Support\Facades\Http',
+    ]);
