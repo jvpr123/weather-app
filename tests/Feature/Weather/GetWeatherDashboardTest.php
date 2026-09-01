@@ -79,6 +79,7 @@ it('returns the normalized weather dashboard contract', function () {
         ->assertJsonPath('data.hourly.0.datetime', 1_777_636_800)
         ->assertJsonPath('data.daily.0.minTemperature', 25.2)
         ->assertJsonPath('data.daily.0.maxTemperature', 31.1)
+        ->assertJsonPath('data.timezoneOffset', -10_800)
         ->assertJsonPath('data.theme', 'clear-day')
         ->assertJsonStructure([
             'data' => [
@@ -86,6 +87,7 @@ it('returns the normalized weather dashboard contract', function () {
                 'current',
                 'hourly',
                 'daily',
+                'timezoneOffset',
                 'theme',
             ],
         ]);

@@ -28,6 +28,7 @@ final readonly class GetWeatherDashboardAction
             current: $current,
             hourly: $forecast->periods,
             daily: $this->dailyForecast->aggregate($forecast),
+            timezoneOffset: $forecast->timezoneOffset,
             theme: $this->themeResolver->resolve(
                 condition: $current->condition,
                 sunrise: $current->sunrise,

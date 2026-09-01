@@ -84,6 +84,8 @@ export function isWeatherDashboard(value: unknown): value is WeatherDashboardDat
     && value.hourly.every(isForecastPeriod)
     && Array.isArray(value.daily)
     && value.daily.every(isDailyForecast)
+    && typeof value.timezoneOffset === 'number'
+    && Number.isFinite(value.timezoneOffset)
     && typeof value.theme === 'string'
     && WEATHER_THEMES.includes(value.theme as WeatherTheme);
 }

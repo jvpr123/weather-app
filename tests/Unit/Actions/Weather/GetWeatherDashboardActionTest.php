@@ -82,12 +82,14 @@ it('orchestrates providers and domain services into a dashboard DTO', function (
         ->and($dashboard->current)->toBe($current)
         ->and($dashboard->hourly)->toBe([$period])
         ->and($dashboard->daily)->toHaveCount(1)
+        ->and($dashboard->timezoneOffset)->toBe(-10_800)
         ->and($dashboard->theme)->toBe('clear-day')
         ->and($dashboard->toArray())->toHaveKeys([
             'location',
             'current',
             'hourly',
             'daily',
+            'timezoneOffset',
             'theme',
         ]);
 });

@@ -16,6 +16,7 @@ final readonly class WeatherDashboardData
         public CurrentWeatherData $current,
         public array $hourly,
         public array $daily,
+        public int $timezoneOffset,
         public string $theme,
     ) {}
 
@@ -33,6 +34,7 @@ final readonly class WeatherDashboardData
                 fn (DailyForecastData $day): array => $day->toArray(),
                 $this->daily,
             ),
+            'timezoneOffset' => $this->timezoneOffset,
             'theme' => $this->theme,
         ];
     }

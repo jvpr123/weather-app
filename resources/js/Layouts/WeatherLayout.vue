@@ -161,7 +161,10 @@ async function useCurrentLocation(): Promise<void> {
             aria-labelledby="weather-tab-forecast"
             class="grid gap-7 py-4"
           >
-            <HourlyForecast :periods="dashboard.hourly" />
+            <HourlyForecast
+              :periods="dashboard.hourly"
+              :timezone-offset="dashboard.timezoneOffset"
+            />
             <DailyForecast :days="dashboard.daily" />
           </section>
         </WeatherTabs>

@@ -49,5 +49,6 @@ export interface WeatherDashboardData {
   current: CurrentWeatherData;
   hourly: ForecastPeriodData[];
   daily: DailyForecastData[];
+  timezoneOffset: number;
   theme: WeatherTheme;
 }

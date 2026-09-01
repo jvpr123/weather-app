@@ -4,8 +4,9 @@ import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { ForecastPeriodData } from '@/Types/weather';
 import { weatherSymbol } from '@/Utils/weather';
 
-defineProps<{
+const props = defineProps<{
   periods: ForecastPeriodData[];
+  timezoneOffset: number;
 }>();
 
 const carousel = ref<HTMLElement | null>(null);
@@ -41,8 +42,9 @@ function moveCarousel(direction: -1 | 1): void {
 function formatHour(timestamp: number): string {
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
-    hour12: false,
-  }).format(new Date(timestamp * 1000));
+    hourCycle: 'h23',
+    timeZone: 'UTC',
+  }).format(new Date((timestamp + props.timezoneOffset) * 1000));
 }
 
 onMounted(async () => {
