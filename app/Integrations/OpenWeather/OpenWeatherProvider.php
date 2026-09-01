@@ -8,6 +8,8 @@ use App\Contracts\Weather\GeocodingProvider;
 use App\DTOs\Location\Coordinates;
 use App\DTOs\Location\LocationData;
 use App\DTOs\Weather\CurrentWeatherData;
+use App\DTOs\Weather\ForecastData;
+use App\DTOs\Weather\ForecastPeriodData;
 use App\Exceptions\WeatherProviderException;
 
 final readonly class OpenWeatherProvider implements CurrentWeatherProvider, ForecastProvider, GeocodingProvider
@@ -59,6 +61,18 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         ]);
 
         return $this->mapCurrentWeather($payload);
+    }
+
+    public function forecast(Coordinates $coordinates): ForecastData
+    {
+        $payload = $this->client->get('/data/2.5/forecast', [
+            'lat' => $coordinates->latitude,
+            'lon' => $coordinates->longitude,
+            'units' => 'metric',
+            'lang' => 'pt_br',
+        ]);
+
+        return $this->mapForecast($payload);
     }
 
     private function mapLocation(mixed $location): LocationData
@@ -129,6 +143,71 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
             sunrise: (int) $system['sunrise'],
             sunset: (int) $system['sunset'],
             timestamp: (int) $payload['dt'],
+        );
+    }
+
+    /** @param array<array-key, mixed> $payload */
+    private function mapForecast(array $payload): ForecastData
+    {
+        $periods = $payload['list'] ?? null;
+        $city = $payload['city'] ?? null;
+
+        if (! is_array($periods)
+            || ! array_is_list($periods)
+            || ! is_array($city)
+            || ! is_numeric($city['timezone'] ?? null)) {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        return new ForecastData(
+            periods: array_map(
+                fn (mixed $period): ForecastPeriodData => $this->mapForecastPeriod($period),
+                $periods,
+            ),
+            timezoneOffset: (int) $city['timezone'],
+        );
+    }
+
+    private function mapForecastPeriod(mixed $period): ForecastPeriodData
+    {
+        if (! is_array($period)) {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        $main = $period['main'] ?? null;
+        $wind = $period['wind'] ?? null;
+        $weather = $period['weather'] ?? null;
+        $condition = is_array($weather) && array_is_list($weather)
+            ? ($weather[0] ?? null)
+            : null;
+
+        if (! is_array($main)
+            || ! is_array($wind)
+            || ! is_array($condition)
+            || ! $this->hasNumericValues($period, ['dt', 'pop'])
+            || ! $this->hasNumericValues($main, ['temp', 'temp_min', 'temp_max'])
+            || ! $this->hasNumericValues($wind, ['speed'])
+            || ! is_numeric($condition['id'] ?? null)
+            || ! is_string($condition['main'] ?? null)
+            || trim($condition['main']) === '') {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        $probabilityOfPrecipitation = (float) $period['pop'];
+
+        if ($probabilityOfPrecipitation < 0 || $probabilityOfPrecipitation > 1) {
+            throw WeatherProviderException::invalidResponse();
+        }
+
+        return new ForecastPeriodData(
+            datetime: (int) $period['dt'],
+            temperature: (float) $main['temp'],
+            minTemperature: (float) $main['temp_min'],
+            maxTemperature: (float) $main['temp_max'],
+            condition: trim($condition['main']),
+            weatherCode: (int) $condition['id'],
+            probabilityOfPrecipitation: $probabilityOfPrecipitation,
+            windSpeed: (float) $wind['speed'],
         );
     }
 

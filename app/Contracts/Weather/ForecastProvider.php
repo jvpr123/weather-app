@@ -2,7 +2,10 @@
 
 namespace App\Contracts\Weather;
 
+use App\DTOs\Location\Coordinates;
+use App\DTOs\Weather\ForecastData;
+
 interface ForecastProvider
 {
-    // The forecast capability is introduced in Epic 3.
+    public function forecast(Coordinates $coordinates): ForecastData;
 }
