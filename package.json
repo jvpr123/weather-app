@@ -28,7 +28,7 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
-        "@inertiajs/vue3": "^3.7.0",
+        "@inertiajs/vue3": "^2.3.27",
         "vue": "^3.5.42"
     }
 }
