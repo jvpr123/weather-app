@@ -1,5 +1,6 @@
 import { computed, onScopeDispose, ref } from 'vue';
 import type { LocationData } from '@/Types/location';
+import { isLocationData } from '@/Utils/location';
 
 interface LocationSearchResponse {
   data: LocationData[];
@@ -8,25 +9,11 @@ interface LocationSearchResponse {
 const SEARCH_DELAY = 300;
 const MINIMUM_QUERY_LENGTH = 2;
 
-function isLocation(value: unknown): value is LocationData {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const location = value as Record<string, unknown>;
-
-  return typeof location.name === 'string'
-    && (typeof location.state === 'string' || location.state === null)
-    && typeof location.country === 'string'
-    && typeof location.latitude === 'number'
-    && typeof location.longitude === 'number';
-}
-
 function isSearchResponse(value: unknown): value is LocationSearchResponse {
   return typeof value === 'object'
     && value !== null
     && Array.isArray((value as Record<string, unknown>).data)
-    && (value as LocationSearchResponse).data.every(isLocation);
+    && (value as LocationSearchResponse).data.every(isLocationData);
 }
 
 export function useLocationSearch() {

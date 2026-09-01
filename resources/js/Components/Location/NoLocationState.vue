@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import { useGeolocation } from '@/Composables/useGeolocation';
 import type { GeolocationStatus } from '@/Composables/useGeolocation';
+import { useReverseGeocoding } from '@/Composables/useReverseGeocoding';
 import type { LocationData } from '@/Types/location';
 
 interface StateContent {
@@ -51,7 +52,24 @@ const {
   status,
   coordinates,
   request,
+  reset: resetGeolocation,
 } = useGeolocation();
+const {
+  loading: resolvingLocation,
+  resolve: resolveLocation,
+  clear: clearLocationResolution,
+} = useReverseGeocoding();
+
+const locationRequestPending = computed(() => status.value === 'requesting' || resolvingLocation.value);
+const locationButtonLabel = computed(() => {
+  if (resolvingLocation.value) {
+    return 'Identificando cidade...';
+  }
+
+  return status.value === 'requesting'
+    ? 'Buscando localização...'
+    : 'Usar minha localização';
+});
 
 const currentContent = computed<StateContent>(() => {
   if (selectedLocation.value) {
@@ -59,6 +77,14 @@ const currentContent = computed<StateContent>(() => {
       eyebrow: 'Cidade selecionada',
       title: selectedLocation.value.name,
       description: 'Localização pronta para consultar o clima.',
+    };
+  }
+
+  if (resolvingLocation.value) {
+    return {
+      eyebrow: 'Localização encontrada',
+      title: 'Identificando sua cidade',
+      description: 'Estamos associando suas coordenadas a uma localidade próxima.',
     };
   }
 
@@ -81,14 +107,24 @@ const locationDetail = computed(() => {
 
 async function useCurrentLocation(): Promise<void> {
   selectedLocation.value = null;
-  await request();
+  clearLocationResolution();
+
+  const foundCoordinates = await request();
+
+  if (foundCoordinates) {
+    selectedLocation.value = await resolveLocation(foundCoordinates);
+  }
 }
 
 function openManualSearch(): void {
+  clearLocationResolution();
+  resetGeolocation();
   manualSearchOpen.value = true;
 }
 
 function selectLocation(location: LocationData): void {
+  clearLocationResolution();
+  resetGeolocation();
   selectedLocation.value = location;
 }
 </script>
@@ -168,16 +204,16 @@ function selectLocation(location: LocationData): void {
           <div class="grid gap-3 sm:grid-cols-2">
             <button
               type="button"
-              :disabled="status === 'requesting'"
+              :disabled="locationRequestPending"
               class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-cyan-100 px-5 py-3 font-semibold text-slate-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60"
               @click="useCurrentLocation"
             >
               <span
-                v-if="status === 'requesting'"
+                v-if="locationRequestPending"
                 aria-hidden="true"
                 class="size-4 animate-spin rounded-full border-2 border-slate-950/25 border-t-slate-950"
               />
-              {{ status === 'requesting' ? 'Buscando localização...' : 'Usar minha localização' }}
+              {{ locationButtonLabel }}
             </button>
 
             <button
