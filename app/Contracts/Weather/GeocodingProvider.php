@@ -2,7 +2,10 @@
 
 namespace App\Contracts\Weather;
 
+use App\DTOs\Location\LocationData;
+
 interface GeocodingProvider
 {
-    // The search capability is introduced in Epic 2.
+    /** @return list<LocationData> */
+    public function search(string $query, int $limit = 5): array;
 }
