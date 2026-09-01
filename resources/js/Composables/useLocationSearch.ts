@@ -118,6 +118,11 @@ export function useLocationSearch() {
       return;
     }
 
+    results.value = [];
+    loading.value = true;
+    error.value = null;
+    hasSearched.value = false;
+
     debounceTimer = setTimeout(() => {
       debounceTimer = undefined;
       void execute(query, sequence);

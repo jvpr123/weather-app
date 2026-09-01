@@ -3,9 +3,12 @@ import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
 import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: string;
-}>();
+  placement?: 'top' | 'bottom';
+}>(), {
+  placement: 'bottom',
+});
 
 const emit = defineEmits<{
   'update:modelValue': [value: string];
@@ -33,6 +36,9 @@ const activeOptionId = computed(() => activeIndex.value >= 0
   : undefined);
 
 const showPanel = computed(() => open.value && props.modelValue.trim().length >= 2);
+const showResultsPanel = computed(() => showPanel.value
+  && !loading.value
+  && (error.value !== null || isEmpty.value || results.value.length > 0));
 
 watch(
   () => props.modelValue,
@@ -145,7 +151,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         role="combobox"
         aria-autocomplete="list"
         :aria-controls="listboxId"
-        :aria-expanded="showPanel"
+        :aria-expanded="showResultsPanel"
         :aria-activedescendant="activeOptionId"
         class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pr-12 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
         @input="updateValue"
@@ -165,8 +171,9 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
     </div>
 
     <div
-      v-if="showPanel"
-      class="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl shadow-black/30 backdrop-blur-xl"
+      v-if="showResultsPanel"
+      class="absolute z-20 w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl shadow-black/30 backdrop-blur-xl"
+      :class="placement === 'top' ? 'bottom-full mb-2' : 'mt-2'"
     >
       <p
         v-if="error"
