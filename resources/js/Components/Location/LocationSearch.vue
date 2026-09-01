@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
 import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
+import { Search } from '@lucide/vue';
 
 const props = withDefaults(defineProps<{
   modelValue: string;
@@ -126,21 +127,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
     </label>
 
     <div class="relative">
-      <svg
-        aria-hidden="true"
-        class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <circle
-          cx="11"
-          cy="11"
-          r="7"
-        />
-        <path d="m20 20-3.5-3.5" />
-      </svg>
+      <Search class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400" />
 
       <input
         :id="`${listboxId}-input`"
