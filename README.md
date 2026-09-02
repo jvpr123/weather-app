@@ -4,6 +4,10 @@
   <img src="public/images/weatherlens-logo.png" alt="WeatherLens" width="560">
 </p>
 
+## Demo
+
+Watch the app demo on Loom: https://www.loom.com/share/042e8c4f25754a379a44072cfde7c4ee
+
 ## Overview
 
 WeatherLens is a responsive weather dashboard for finding a location, viewing its current conditions and forecast, and comparing two cities for outdoor activities. It is built as a Laravel 13 modular monolith: Laravel owns the application and integration boundaries, while Inertia connects the server to a Vue 3 interface without requiring a separate frontend application.
