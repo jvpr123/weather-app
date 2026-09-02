@@ -1,8 +1,5 @@
 <template>
-  <section
-    aria-hidden="true"
-    class="motion-safe:animate-pulse"
-  >
+  <section aria-hidden="true" class="motion-safe:animate-pulse">
     <div class="grid grid-cols-2 gap-1 rounded-2xl bg-black/10 p-1">
       <div class="h-14 rounded-xl bg-white/15" />
       <div class="h-14 rounded-xl bg-white/5" />

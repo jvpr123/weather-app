@@ -31,12 +31,7 @@ const emit = defineEmits<{
 
 const query = ref('');
 const activeTab = ref<WeatherTab>('current');
-const {
-  status,
-  coordinates,
-  request,
-  reset: resetGeolocation,
-} = useGeolocation();
+const { status, coordinates, request, reset: resetGeolocation } = useGeolocation();
 const {
   loading: resolvingLocation,
   resolve: resolveLocation,
@@ -44,12 +39,16 @@ const {
 } = useReverseGeocoding();
 
 const theme = computed(() => props.dashboard?.theme ?? 'cloudy-night');
-const locationRequestPending = computed(() => status.value === 'requesting' || resolvingLocation.value);
-const locationButtonLabel = computed(() => resolvingLocation.value
-  ? 'Identificando cidade...'
-  : status.value === 'requesting'
-    ? 'Buscando localização...'
-    : 'Usar localização atual');
+const locationRequestPending = computed(
+  () => status.value === 'requesting' || resolvingLocation.value,
+);
+const locationButtonLabel = computed(() =>
+  resolvingLocation.value
+    ? 'Identificando cidade...'
+    : status.value === 'requesting'
+      ? 'Buscando localização...'
+      : 'Usar localização atual',
+);
 
 function selectLocation(location: LocationData): void {
   clearLocationResolution();
@@ -66,7 +65,7 @@ async function useCurrentLocation(): Promise<void> {
     return;
   }
 
-  const location = await resolveLocation(foundCoordinates) ?? {
+  const location = (await resolveLocation(foundCoordinates)) ?? {
     name: 'Localização atual',
     state: null,
     country: '--',
@@ -82,26 +81,22 @@ async function useCurrentLocation(): Promise<void> {
     class="weather-layout relative isolate min-h-screen overflow-x-hidden px-3 py-3 text-[var(--weather-text)] transition-colors duration-500 sm:px-5 sm:py-4 lg:px-8"
     :class="theme"
   >
-    <div
-      aria-hidden="true"
-      class="absolute inset-0 -z-20 bg-[var(--weather-background)]"
-    />
+    <div aria-hidden="true" class="absolute inset-0 -z-20 bg-[var(--weather-background)]" />
     <div
       aria-hidden="true"
       class="absolute top-0 left-1/2 -z-10 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-[var(--weather-glow)] blur-3xl"
     />
 
-    <div class="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100vh-2rem)]">
-      <header class="relative z-20 flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
-        <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">
-          WeatherLens
-        </p>
+    <div
+      class="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100vh-2rem)]"
+    >
+      <header
+        class="relative z-20 flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
+      >
+        <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">WeatherLens</p>
         <div class="flex w-full min-w-0 items-center gap-2 sm:w-auto">
           <div class="min-w-0 flex-1 sm:w-80 sm:flex-none lg:w-96">
-            <LocationSearch
-              v-model="query"
-              @select="selectLocation"
-            >
+            <LocationSearch v-model="query" @select="selectLocation">
               <template #trailing>
                 <div class="group/location relative flex h-full items-stretch">
                   <button
@@ -118,11 +113,7 @@ async function useCurrentLocation(): Promise<void> {
                       class="size-5 animate-spin motion-reduce:animate-none"
                       :stroke-width="2"
                     />
-                    <MapPin
-                      v-else
-                      aria-hidden="true"
-                      class="size-5"
-                    />
+                    <MapPin v-else aria-hidden="true" class="size-5" />
                   </button>
                   <span
                     id="current-location-tooltip"
@@ -140,33 +131,20 @@ async function useCurrentLocation(): Promise<void> {
             aria-label="Comparar cidades"
             class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
           >
-            <ArrowLeftRight
-              aria-hidden="true"
-              class="size-5 shrink-0"
-            />
+            <ArrowLeftRight aria-hidden="true" class="size-5 shrink-0" />
             <span class="hidden whitespace-nowrap md:inline">Comparar</span>
           </Link>
         </div>
       </header>
 
-      <section
-        v-if="loading"
-        class="flex-1"
-        aria-live="polite"
-        aria-busy="true"
-      >
-        <p class="sr-only">
-          Carregando previsão do tempo
-        </p>
+      <section v-if="loading" class="flex-1" aria-live="polite" aria-busy="true">
+        <p class="sr-only">Carregando previsão do tempo</p>
         <WeatherHeroSkeleton />
         <ForecastSkeleton />
       </section>
 
       <template v-else-if="dashboard">
-        <CurrentWeatherHero
-          :location="dashboard.location"
-          :current="dashboard.current"
-        />
+        <CurrentWeatherHero :location="dashboard.location" :current="dashboard.current" />
 
         <WeatherTabs v-model="activeTab">
           <section
@@ -197,11 +175,7 @@ async function useCurrentLocation(): Promise<void> {
         </WeatherTabs>
       </template>
 
-      <RequestErrorState
-        v-else-if="errorMessage"
-        :message="errorMessage"
-        @retry="emit('retry')"
-      />
+      <RequestErrorState v-else-if="errorMessage" :message="errorMessage" @retry="emit('retry')" />
 
       <NoLocationState
         v-else

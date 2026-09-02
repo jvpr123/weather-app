@@ -1,12 +1,8 @@
 import { computed, ref } from 'vue';
 import type { Coordinates } from '@/Types/location';
 
-export type GeolocationStatus = 'idle'
-  | 'requesting'
-  | 'available'
-  | 'denied'
-  | 'unavailable'
-  | 'timeout';
+export type GeolocationStatus =
+  'idle' | 'requesting' | 'available' | 'denied' | 'unavailable' | 'timeout';
 
 const DEFAULT_OPTIONS: PositionOptions = {
   enableHighAccuracy: false,
@@ -15,12 +11,14 @@ const DEFAULT_OPTIONS: PositionOptions = {
 };
 
 function validCoordinates(coordinates: GeolocationCoordinates): boolean {
-  return Number.isFinite(coordinates.latitude)
-    && coordinates.latitude >= -90
-    && coordinates.latitude <= 90
-    && Number.isFinite(coordinates.longitude)
-    && coordinates.longitude >= -180
-    && coordinates.longitude <= 180;
+  return (
+    Number.isFinite(coordinates.latitude) &&
+    coordinates.latitude >= -90 &&
+    coordinates.latitude <= 90 &&
+    Number.isFinite(coordinates.longitude) &&
+    coordinates.longitude >= -180 &&
+    coordinates.longitude <= 180
+  );
 }
 
 export function useGeolocation() {

@@ -10,14 +10,16 @@ const props = defineProps<{
   current: CurrentWeatherData;
 }>();
 
-const locationDetail = computed(() => [props.location.state, props.location.country]
-  .filter(Boolean)
-  .join(', '));
+const locationDetail = computed(() =>
+  [props.location.state, props.location.country].filter(Boolean).join(', '),
+);
 </script>
 
 <template>
   <section class="px-1 py-7 text-center sm:px-2 sm:py-9 lg:py-12">
-    <p class="mx-auto max-w-2xl text-sm font-semibold tracking-[0.12em] break-words uppercase opacity-75 sm:tracking-[0.16em]">
+    <p
+      class="mx-auto max-w-2xl text-sm font-semibold tracking-[0.12em] break-words uppercase opacity-75 sm:tracking-[0.16em]"
+    >
       {{ location.name }}<span v-if="locationDetail">, {{ locationDetail }}</span>
     </p>
     <div class="mt-4 flex items-start justify-center">
@@ -27,22 +29,18 @@ const locationDetail = computed(() => [props.location.state, props.location.coun
       <span class="mt-2 text-3xl font-light">°</span>
     </div>
     <p class="mt-3 text-lg font-medium capitalize">
-      <span aria-hidden="true">{{ weatherSymbol(current.condition, !current.icon.endsWith('n')) }}</span>
+      <span aria-hidden="true">{{
+        weatherSymbol(current.condition, !current.icon.endsWith('n'))
+      }}</span>
       {{ current.description }}
     </p>
     <div class="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm opacity-80">
       <span class="flex items-center gap-2">
-        <ThermometerSnowflake
-          aria-hidden="true"
-          class="size-4"
-        />
+        <ThermometerSnowflake aria-hidden="true" class="size-4" />
         Mín. {{ Math.round(current.minTemperature) }}°
       </span>
       <span class="flex items-center gap-2">
-        <ThermometerSun
-          aria-hidden="true"
-          class="size-4"
-        />
+        <ThermometerSun aria-hidden="true" class="size-4" />
         Máx. {{ Math.round(current.maxTemperature) }}°
       </span>
     </div>

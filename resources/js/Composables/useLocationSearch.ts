@@ -11,10 +11,12 @@ const SEARCH_DELAY = 300;
 const MINIMUM_QUERY_LENGTH = 2;
 
 function isSearchResponse(value: unknown): value is LocationSearchResponse {
-  return typeof value === 'object'
-    && value !== null
-    && Array.isArray((value as Record<string, unknown>).data)
-    && (value as LocationSearchResponse).data.every(isLocationData);
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Array.isArray((value as Record<string, unknown>).data) &&
+    (value as LocationSearchResponse).data.every(isLocationData)
+  );
 }
 
 export function useLocationSearch() {
@@ -22,7 +24,9 @@ export function useLocationSearch() {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const hasSearched = ref(false);
-  const isEmpty = computed(() => hasSearched.value && !loading.value && !error.value && results.value.length === 0);
+  const isEmpty = computed(
+    () => hasSearched.value && !loading.value && !error.value && results.value.length === 0,
+  );
 
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;

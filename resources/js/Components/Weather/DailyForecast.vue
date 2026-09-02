@@ -16,22 +16,20 @@ function formatDay(date: string): string {
   return new Intl.DateTimeFormat('pt-BR', {
     weekday: 'short',
     timeZone: 'UTC',
-  }).format(new Date(`${date}T12:00:00Z`)).replace('.', '');
+  })
+    .format(new Date(`${date}T12:00:00Z`))
+    .replace('.', '');
 }
 </script>
 
 <template>
-  <section
-    class="min-w-0 max-w-full"
-    aria-labelledby="daily-title"
-  >
-    <h2
-      id="daily-title"
-      class="px-1 text-sm font-semibold tracking-[0.12em] uppercase opacity-75"
-    >
+  <section class="min-w-0 max-w-full" aria-labelledby="daily-title">
+    <h2 id="daily-title" class="px-1 text-sm font-semibold tracking-[0.12em] uppercase opacity-75">
       Próximos dias
     </h2>
-    <div class="mt-3 w-full max-w-full overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur sm:rounded-3xl">
+    <div
+      class="mt-3 w-full max-w-full overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur sm:rounded-3xl"
+    >
       <article
         v-for="(day, index) in days"
         :key="day.date"
@@ -42,17 +40,11 @@ function formatDay(date: string): string {
           <p class="truncate text-sm font-medium capitalize sm:text-base">
             {{ formatDay(day.date) }}
           </p>
-          <p
-            v-if="day.maxRainProbability > 0.1"
-            class="mt-1 text-xs opacity-75"
-          >
+          <p v-if="day.maxRainProbability > 0.1" class="mt-1 text-xs opacity-75">
             Chuva {{ Math.round(day.maxRainProbability * 100) }}%
           </p>
         </div>
-        <span
-          aria-hidden="true"
-          class="text-2xl"
-        >
+        <span aria-hidden="true" class="text-2xl">
           {{ weatherSymbol(day.dominantCondition) }}
         </span>
         <span class="sr-only">{{ weatherConditionLabel(day.dominantCondition) }}</span>

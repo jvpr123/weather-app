@@ -5,16 +5,19 @@ import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
 import { Search } from '@lucide/vue';
 
-const props = withDefaults(defineProps<{
-  modelValue: string;
-  placement?: 'top' | 'bottom';
-  label?: string;
-  placeholder?: string;
-}>(), {
-  placement: 'bottom',
-  label: 'Buscar cidade',
-  placeholder: 'Buscar cidade...',
-});
+const props = withDefaults(
+  defineProps<{
+    modelValue: string;
+    placement?: 'top' | 'bottom';
+    label?: string;
+    placeholder?: string;
+  }>(),
+  {
+    placement: 'bottom',
+    label: 'Buscar cidade',
+    placeholder: 'Buscar cidade...',
+  },
+);
 
 const emit = defineEmits<{
   'update:modelValue': [value: string];
@@ -28,22 +31,18 @@ const activeIndex = ref(-1);
 const ignoreNextSearch = ref(false);
 const listboxId = `location-results-${useId()}`;
 
-const {
-  results,
-  loading,
-  error,
-  isEmpty,
-  search,
-  clear,
-} = useLocationSearch();
+const { results, loading, error, isEmpty, search, clear } = useLocationSearch();
 
-const activeOptionId = computed(() => activeIndex.value >= 0
-  ? `${listboxId}-option-${activeIndex.value}`
-  : undefined);
+const activeOptionId = computed(() =>
+  activeIndex.value >= 0 ? `${listboxId}-option-${activeIndex.value}` : undefined,
+);
 
 const showPanel = computed(() => open.value && props.modelValue.trim().length >= 2);
-const showResultsPanel = computed(() => showPanel.value
-  && (loading.value || error.value !== null || isEmpty.value || results.value.length > 0));
+const showResultsPanel = computed(
+  () =>
+    showPanel.value &&
+    (loading.value || error.value !== null || isEmpty.value || results.value.length > 0),
+);
 
 watch(
   () => props.modelValue,
@@ -93,9 +92,11 @@ function moveActive(direction: 1 | -1): void {
   }
 
   activeIndex.value = (activeIndex.value + direction + results.value.length) % results.value.length;
-  void nextTick(() => document
-    .getElementById(`${listboxId}-option-${activeIndex.value}`)
-    ?.scrollIntoView({ block: 'nearest' }));
+  void nextTick(() =>
+    document
+      .getElementById(`${listboxId}-option-${activeIndex.value}`)
+      ?.scrollIntoView({ block: 'nearest' }),
+  );
 }
 
 function chooseActive(): void {
@@ -136,15 +137,8 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
 </script>
 
 <template>
-  <div
-    ref="root"
-    class="relative w-full"
-    @focusout="handleFocusOut"
-  >
-    <label
-      class="sr-only"
-      :for="`${listboxId}-input`"
-    >
+  <div ref="root" class="relative w-full" @focusout="handleFocusOut">
+    <label class="sr-only" :for="`${listboxId}-input`">
       {{ label }}
     </label>
 
@@ -170,18 +164,18 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
         :class="$slots.trailing ? 'pr-16' : 'pr-12'"
         @input="updateValue"
-        @focus="focused = true; open = modelValue.trim().length >= 2"
+        @focus="
+          focused = true;
+          open = modelValue.trim().length >= 2;
+        "
         @blur="focused = false"
         @keydown.down.prevent="moveActive(1)"
         @keydown.up.prevent="moveActive(-1)"
         @keydown.enter="handleEnter"
         @keydown.esc="close"
-      >
+      />
 
-      <div
-        v-if="$slots.trailing"
-        class="absolute inset-y-px right-px flex items-stretch"
-      >
+      <div v-if="$slots.trailing" class="absolute inset-y-px right-px flex items-stretch">
         <slot name="trailing" />
       </div>
     </div>
@@ -193,11 +187,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
     >
       <LocationSearchSkeleton v-if="loading" />
 
-      <div
-        v-else-if="error"
-        role="alert"
-        class="px-4 py-4 text-sm text-rose-200"
-      >
+      <div v-else-if="error" role="alert" class="px-4 py-4 text-sm text-rose-200">
         <p>{{ error }}</p>
         <button
           type="button"
@@ -208,11 +198,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         </button>
       </div>
 
-      <p
-        v-else-if="isEmpty"
-        role="status"
-        class="px-4 py-4 text-sm text-slate-300"
-      >
+      <p v-else-if="isEmpty" role="status" class="px-4 py-4 text-sm text-slate-300">
         Nenhuma cidade encontrada.
       </p>
 
@@ -230,7 +216,9 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
           role="option"
           :aria-selected="activeIndex === index"
           class="cursor-pointer rounded-xl px-3 py-3 text-left transition"
-          :class="activeIndex === index ? 'bg-cyan-300/15 text-white' : 'text-slate-200 hover:bg-white/10'"
+          :class="
+            activeIndex === index ? 'bg-cyan-300/15 text-white' : 'text-slate-200 hover:bg-white/10'
+          "
           @mouseenter="activeIndex = index"
           @mousedown.prevent
           @click="selectLocation(location)"

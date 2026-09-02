@@ -32,10 +32,7 @@ const metrics = computed(() => [
 </script>
 
 <template>
-  <section
-    aria-label="Métricas atuais"
-    class="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4"
-  >
+  <section aria-label="Métricas atuais" class="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
     <article
       v-for="metric in metrics"
       :key="metric.label"

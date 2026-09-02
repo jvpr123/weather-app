@@ -1,11 +1,7 @@
 import type { LocationData } from '@/Types/location';
 
-export type WeatherTheme = 'clear-day'
-  | 'clear-night'
-  | 'cloudy-day'
-  | 'cloudy-night'
-  | 'rain-day'
-  | 'rain-night';
+export type WeatherTheme =
+  'clear-day' | 'clear-night' | 'cloudy-day' | 'cloudy-night' | 'rain-day' | 'rain-night';
 
 export interface CurrentWeatherData {
   temperature: number;

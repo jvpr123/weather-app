@@ -9,9 +9,11 @@ interface ComparisonResponse {
 }
 
 function isComparisonResponse(value: unknown): value is ComparisonResponse {
-  return typeof value === 'object'
-    && value !== null
-    && isCityComparison((value as Record<string, unknown>).data);
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    isCityComparison((value as Record<string, unknown>).data)
+  );
 }
 
 function appendLocation(

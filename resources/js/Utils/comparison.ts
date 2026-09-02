@@ -11,12 +11,14 @@ function isComparedCity(value: unknown): value is ComparedCityData {
     return false;
   }
 
-  return isLocationData(value.location)
-    && isCurrentWeatherData(value.current)
-    && typeof value.rainProbability === 'number'
-    && Number.isFinite(value.rainProbability)
-    && typeof value.outdoorScore === 'number'
-    && Number.isFinite(value.outdoorScore);
+  return (
+    isLocationData(value.location) &&
+    isCurrentWeatherData(value.current) &&
+    typeof value.rainProbability === 'number' &&
+    Number.isFinite(value.rainProbability) &&
+    typeof value.outdoorScore === 'number' &&
+    Number.isFinite(value.outdoorScore)
+  );
 }
 
 export function isCityComparison(value: unknown): value is CityComparisonData {
@@ -24,9 +26,11 @@ export function isCityComparison(value: unknown): value is CityComparisonData {
     return false;
   }
 
-  return isComparedCity(value.left)
-    && isComparedCity(value.right)
-    && (value.recommendation === 'left'
-      || value.recommendation === 'right'
-      || value.recommendation === 'tie');
+  return (
+    isComparedCity(value.left) &&
+    isComparedCity(value.right) &&
+    (value.recommendation === 'left' ||
+      value.recommendation === 'right' ||
+      value.recommendation === 'tie')
+  );
 }

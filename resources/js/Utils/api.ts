@@ -23,7 +23,7 @@ export async function apiRequestError(
   fallbackMessage: string,
 ): Promise<ApiRequestError> {
   try {
-    const payload = await response.json() as ApiErrorResponse;
+    const payload = (await response.json()) as ApiErrorResponse;
 
     if (isApiErrorCode(payload.code)) {
       return new ApiRequestError(errorMessages[payload.code]);
