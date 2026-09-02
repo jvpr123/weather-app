@@ -24,7 +24,7 @@ jobs:
         env:
           POSTGRES_DB: weatherlens_testing
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
@@ -35,14 +35,14 @@ jobs:
 
     env:
       APP_ENV: testing
-      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_KEY: ${{ secrets.APP_KEY }}
       CACHE_STORE: array
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
       DB_DATABASE: weatherlens_testing
       DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       MAIL_MAILER: array
       QUEUE_CONNECTION: sync
       SESSION_DRIVER: array
@@ -70,6 +70,9 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Prepare application environment
+        run: cp .env.example .env
 
       - name: Run database migrations
         run: php artisan migrate --force
