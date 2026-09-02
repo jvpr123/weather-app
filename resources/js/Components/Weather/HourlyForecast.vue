@@ -47,6 +47,14 @@ function formatHour(timestamp: number): string {
   }).format(new Date((timestamp + props.timezoneOffset) * 1000));
 }
 
+function formatPeriodDate(timestamp: number): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+  }).format(new Date((timestamp + props.timezoneOffset) * 1000));
+}
+
 onMounted(async () => {
   await nextTick();
   updateScrollState();
@@ -103,9 +111,10 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
         >
           <time
             :datetime="new Date(period.datetime * 1000).toISOString()"
-            class="text-sm opacity-75"
+            class="block tabular-nums"
           >
-            {{ formatHour(period.datetime) }}h
+            <span class="block text-xs opacity-60">{{ formatPeriodDate(period.datetime) }}</span>
+            <span class="mt-1 block text-sm opacity-75">{{ formatHour(period.datetime) }}h</span>
           </time>
           <p aria-hidden="true" class="my-3 text-2xl">
             {{ weatherSymbol(period.condition, period.isDaytime) }}

@@ -179,7 +179,11 @@ async function useCurrentLocation(): Promise<void> {
                   :periods="dashboard.hourly"
                   :timezone-offset="dashboard.timezoneOffset"
                 />
-                <DailyForecast v-if="dashboard.daily.length > 0" :days="dashboard.daily" />
+                <DailyForecast
+                  v-if="dashboard.daily.length > 0"
+                  :days="dashboard.daily"
+                  :timezone-offset="dashboard.timezoneOffset"
+                />
               </template>
             </section>
           </Transition>
