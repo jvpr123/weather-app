@@ -2,6 +2,7 @@
 import { ArrowLeftRight, LoaderCircle, MapPin } from '@lucide/vue';
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import BrandMark from '@/Components/BrandMark.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
 import RequestErrorState from '@/Components/RequestErrorState.vue';
@@ -93,7 +94,7 @@ async function useCurrentLocation(): Promise<void> {
       <header
         class="relative z-20 flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
       >
-        <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">WeatherLens</p>
+        <BrandMark />
         <div class="flex w-full min-w-0 items-center gap-2 sm:w-auto">
           <div class="min-w-0 flex-1 sm:w-80 sm:flex-none lg:w-96">
             <LocationSearch v-model="query" @select="selectLocation">

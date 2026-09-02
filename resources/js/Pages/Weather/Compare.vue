@@ -2,6 +2,7 @@
 import { ArrowLeftRight, LoaderCircle } from '@lucide/vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import BrandMark from '@/Components/BrandMark.vue';
 import ComparisonResult from '@/Components/Comparison/ComparisonResult.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import RequestErrorState from '@/Components/RequestErrorState.vue';
@@ -65,7 +66,7 @@ function submit(): void {
 
     <div class="mx-auto w-full max-w-5xl">
       <header class="flex items-center justify-between gap-3 sm:gap-4">
-        <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">WeatherLens</p>
+        <BrandMark />
         <Link
           href="/"
           class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
