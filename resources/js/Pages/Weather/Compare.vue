@@ -69,7 +69,7 @@ function submit(): void {
         <BrandMark />
         <Link
           href="/"
-          class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
+          class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
         >
           Voltar ao clima
         </Link>
@@ -132,7 +132,7 @@ function submit(): void {
         <button
           type="submit"
           :disabled="!canCompare"
-          class="mx-auto mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-48"
+          class="mx-auto mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-48"
         >
           <LoaderCircle v-if="loading" aria-hidden="true" class="size-5 motion-safe:animate-spin" />
           <ArrowLeftRight v-else aria-hidden="true" class="size-5" />

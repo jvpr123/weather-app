@@ -103,7 +103,7 @@ function handleTouchEnd(event: TouchEvent): void {
         :aria-controls="`weather-panel-${tab[0]}`"
         :aria-selected="modelValue === tab[0]"
         :tabindex="modelValue === tab[0] ? 0 : -1"
-        class="min-h-11 rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+        class="min-h-11 rounded-xl px-4 py-2 text-sm font-semibold transition active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
         :class="modelValue === tab[0] ? 'bg-white/20 shadow-sm' : 'opacity-75 hover:opacity-100'"
         @click="select(tab[0])"
         @keydown="handleKeydown($event, index)"

@@ -72,7 +72,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollLeft"
           aria-label="Ver horas anteriores"
-          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(-1)"
         >
           <ChevronLeft aria-hidden="true" class="size-4" />
@@ -81,7 +81,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollRight"
           aria-label="Ver próximas horas"
-          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(1)"
         >
           <ChevronRight aria-hidden="true" class="size-4" />

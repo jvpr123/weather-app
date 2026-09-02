@@ -83,7 +83,14 @@ async function useCurrentLocation(): Promise<void> {
     class="weather-layout relative isolate min-h-screen overflow-x-hidden px-3 py-3 text-[var(--weather-text)] transition-colors duration-500 sm:px-5 sm:py-4 lg:px-8"
     :class="theme"
   >
-    <div aria-hidden="true" class="absolute inset-0 -z-20 bg-[var(--weather-background)]" />
+    <Transition name="weather-theme">
+      <div
+        :key="theme"
+        aria-hidden="true"
+        class="absolute inset-0 -z-20 bg-[var(--weather-background)]"
+        :class="theme"
+      />
+    </Transition>
     <div
       aria-hidden="true"
       class="absolute top-0 left-1/2 -z-10 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-[var(--weather-glow)] blur-3xl"
@@ -104,7 +111,7 @@ async function useCurrentLocation(): Promise<void> {
                   <button
                     type="button"
                     :disabled="locationRequestPending"
-                    class="inline-flex w-14 items-center justify-center rounded-r-[15px] border-l border-white/15 text-slate-300 transition hover:bg-white/10 hover:text-white focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60"
+                    class="inline-flex w-14 items-center justify-center rounded-r-[15px] border-l border-white/15 text-slate-300 transition hover:bg-white/10 hover:text-white active:scale-95 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60"
                     :aria-label="locationButtonLabel"
                     aria-describedby="current-location-tooltip"
                     @click="useCurrentLocation"
@@ -131,7 +138,7 @@ async function useCurrentLocation(): Promise<void> {
           <Link
             href="/weather/compare"
             aria-label="Comparar cidades"
-            class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
+            class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
           >
             <ArrowLeftRight aria-hidden="true" class="size-5 shrink-0" />
             <span class="hidden whitespace-nowrap md:inline">Comparar</span>
@@ -149,34 +156,38 @@ async function useCurrentLocation(): Promise<void> {
         <CurrentWeatherHero :location="dashboard.location" :current="dashboard.current" />
 
         <WeatherTabs v-model="activeTab">
-          <section
-            v-show="activeTab === 'current'"
-            id="weather-panel-current"
-            role="tabpanel"
-            aria-labelledby="weather-tab-current"
-            tabindex="0"
-            class="rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
-          >
-            <WeatherMetrics :current="dashboard.current" />
-          </section>
+          <Transition name="weather-panel" mode="out-in">
+            <section
+              v-if="activeTab === 'current'"
+              id="weather-panel-current"
+              key="current"
+              role="tabpanel"
+              aria-labelledby="weather-tab-current"
+              tabindex="0"
+              class="rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+            >
+              <WeatherMetrics :current="dashboard.current" />
+            </section>
 
-          <section
-            v-show="activeTab === 'forecast'"
-            id="weather-panel-forecast"
-            role="tabpanel"
-            aria-labelledby="weather-tab-forecast"
-            tabindex="0"
-            class="grid gap-7 rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
-          >
-            <NoForecastState v-if="dashboard.hourly.length === 0" />
-            <template v-else>
-              <HourlyForecast
-                :periods="dashboard.hourly"
-                :timezone-offset="dashboard.timezoneOffset"
-              />
-              <DailyForecast v-if="dashboard.daily.length > 0" :days="dashboard.daily" />
-            </template>
-          </section>
+            <section
+              v-else
+              id="weather-panel-forecast"
+              key="forecast"
+              role="tabpanel"
+              aria-labelledby="weather-tab-forecast"
+              tabindex="0"
+              class="grid gap-7 rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+            >
+              <NoForecastState v-if="dashboard.hourly.length === 0" />
+              <template v-else>
+                <HourlyForecast
+                  :periods="dashboard.hourly"
+                  :timezone-offset="dashboard.timezoneOffset"
+                />
+                <DailyForecast v-if="dashboard.daily.length > 0" :days="dashboard.daily" />
+              </template>
+            </section>
+          </Transition>
         </WeatherTabs>
       </template>
 
@@ -227,5 +238,36 @@ async function useCurrentLocation(): Promise<void> {
   --weather-background: linear-gradient(155deg, #082f49 0%, #0f172a 52%, #020617 100%);
   --weather-glow: rgb(56 189 248 / 14%);
   --weather-text: #f8fafc;
+}
+
+.weather-panel-enter-active,
+.weather-panel-leave-active {
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.weather-theme-enter-active,
+.weather-theme-leave-active {
+  transition: opacity 500ms ease;
+}
+
+.weather-theme-leave-active {
+  position: absolute;
+}
+
+.weather-theme-enter-from,
+.weather-theme-leave-to {
+  opacity: 0;
+}
+
+.weather-panel-enter-from {
+  opacity: 0;
+  transform: translateX(0.5rem);
+}
+
+.weather-panel-leave-to {
+  opacity: 0;
+  transform: translateX(-0.5rem);
 }
 </style>

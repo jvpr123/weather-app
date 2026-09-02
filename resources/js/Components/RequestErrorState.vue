@@ -38,7 +38,7 @@ defineEmits<{
       </p>
       <button
         type="button"
-        class="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+        class="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
         @click="$emit('retry')"
       >
         <RefreshCw aria-hidden="true" class="size-4" />
