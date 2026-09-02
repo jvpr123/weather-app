@@ -166,13 +166,20 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
     >
       <LocationSearchSkeleton v-if="loading" />
 
-      <p
+      <div
         v-else-if="error"
         role="alert"
         class="px-4 py-4 text-sm text-rose-200"
       >
-        {{ error }}
-      </p>
+        <p>{{ error }}</p>
+        <button
+          type="button"
+          class="mt-3 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          @click="search(modelValue)"
+        >
+          Tentar novamente
+        </button>
+      </div>
 
       <p
         v-else-if="isEmpty"

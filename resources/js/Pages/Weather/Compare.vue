@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ComparisonResult from '@/Components/Comparison/ComparisonResult.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
+import RequestErrorState from '@/Components/RequestErrorState.vue';
 import { useCityComparison } from '@/Composables/useCityComparison';
 import type { LocationData } from '@/Types/location';
 
@@ -124,13 +125,13 @@ function submit(): void {
         >
           Escolha duas cidades diferentes para comparar.
         </p>
-        <p
+        <RequestErrorState
           v-if="error"
-          role="alert"
-          class="mt-4 rounded-2xl border border-rose-200/20 bg-rose-200/10 px-4 py-3 text-center text-sm text-rose-50"
-        >
-          {{ error }}
-        </p>
+          :message="error"
+          compact
+          class="mt-4"
+          @retry="submit"
+        />
 
         <button
           type="submit"
@@ -140,7 +141,7 @@ function submit(): void {
           <LoaderCircle
             v-if="loading"
             aria-hidden="true"
-            class="size-5 animate-spin"
+            class="size-5 motion-safe:animate-spin"
           />
           <ArrowLeftRight
             v-else

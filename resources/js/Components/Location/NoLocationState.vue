@@ -13,7 +13,6 @@ const props = defineProps<{
   status: GeolocationStatus;
   coordinates: Coordinates | null;
   resolvingLocation: boolean;
-  errorMessage?: string | null;
 }>();
 
 const content: Record<GeolocationStatus, StateContent> = {
@@ -108,14 +107,6 @@ const locationDetail = computed(() => props.coordinates
           {{ locationDetail }}
         </p>
       </div>
-
-      <p
-        v-if="errorMessage"
-        role="alert"
-        class="mx-auto mt-8 max-w-md rounded-2xl border border-rose-200/20 bg-rose-200/10 px-4 py-3 text-sm text-rose-50"
-      >
-        {{ errorMessage }}
-      </p>
 
       <p class="mt-8 text-xs leading-5 opacity-50">
         Sua localização é usada somente para encontrar a previsão da sua região.

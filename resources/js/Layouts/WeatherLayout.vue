@@ -4,6 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
+import RequestErrorState from '@/Components/RequestErrorState.vue';
 import CurrentWeatherHero from '@/Components/Weather/CurrentWeatherHero.vue';
 import DailyForecast from '@/Components/Weather/DailyForecast.vue';
 import ForecastSkeleton from '@/Components/Weather/ForecastSkeleton.vue';
@@ -25,6 +26,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [location: LocationData];
+  retry: [];
 }>();
 
 const query = ref('');
@@ -192,12 +194,17 @@ async function useCurrentLocation(): Promise<void> {
         </WeatherTabs>
       </template>
 
+      <RequestErrorState
+        v-else-if="errorMessage"
+        :message="errorMessage"
+        @retry="emit('retry')"
+      />
+
       <NoLocationState
         v-else
         :status="status"
         :coordinates="coordinates"
         :resolving-location="resolvingLocation"
-        :error-message="errorMessage"
       />
     </div>
   </main>
