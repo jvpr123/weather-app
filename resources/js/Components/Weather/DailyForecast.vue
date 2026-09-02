@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DailyForecastData } from '@/Types/weather';
-import { weatherSymbol } from '@/Utils/weather';
+import { weatherConditionLabel, weatherSymbol } from '@/Utils/weather';
 
 defineProps<{
   days: DailyForecastData[];
@@ -44,7 +44,7 @@ function formatDay(date: string): string {
           </p>
           <p
             v-if="day.maxRainProbability > 0.1"
-            class="mt-1 text-xs opacity-65"
+            class="mt-1 text-xs opacity-75"
           >
             Chuva {{ Math.round(day.maxRainProbability * 100) }}%
           </p>
@@ -55,6 +55,7 @@ function formatDay(date: string): string {
         >
           {{ weatherSymbol(day.dominantCondition) }}
         </span>
+        <span class="sr-only">{{ weatherConditionLabel(day.dominantCondition) }}</span>
         <p class="whitespace-nowrap text-right text-sm tabular-nums sm:text-base">
           <span class="opacity-60">{{ Math.round(day.minTemperature) }}°</span>
           <span class="mx-1 opacity-35 sm:mx-2">━</span>

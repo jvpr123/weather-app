@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
 import LocationSearchSkeleton from '@/Components/Location/LocationSearchSkeleton.vue';
 import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
@@ -8,8 +8,12 @@ import { Search } from '@lucide/vue';
 const props = withDefaults(defineProps<{
   modelValue: string;
   placement?: 'top' | 'bottom';
+  label?: string;
+  placeholder?: string;
 }>(), {
   placement: 'bottom',
+  label: 'Buscar cidade',
+  placeholder: 'Buscar cidade...',
 });
 
 const emit = defineEmits<{
@@ -89,6 +93,9 @@ function moveActive(direction: 1 | -1): void {
   }
 
   activeIndex.value = (activeIndex.value + direction + results.value.length) % results.value.length;
+  void nextTick(() => document
+    .getElementById(`${listboxId}-option-${activeIndex.value}`)
+    ?.scrollIntoView({ block: 'nearest' }));
 }
 
 function chooseActive(): void {
@@ -96,6 +103,13 @@ function chooseActive(): void {
 
   if (location) {
     selectLocation(location);
+  }
+}
+
+function handleEnter(event: KeyboardEvent): void {
+  if (activeIndex.value >= 0) {
+    event.preventDefault();
+    chooseActive();
   }
 }
 
@@ -110,6 +124,13 @@ function handleOutsidePointer(event: PointerEvent): void {
   }
 }
 
+function handleFocusOut(event: FocusEvent): void {
+  if (root.value && !root.value.contains(event.relatedTarget as Node | null)) {
+    focused.value = false;
+    close();
+  }
+}
+
 onMounted(() => document.addEventListener('pointerdown', handleOutsidePointer));
 onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsidePointer));
 </script>
@@ -118,25 +139,31 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
   <div
     ref="root"
     class="relative w-full"
+    @focusout="handleFocusOut"
   >
     <label
       class="sr-only"
       :for="`${listboxId}-input`"
     >
-      Buscar cidade
+      {{ label }}
     </label>
 
     <div class="relative">
-      <Search class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400" />
+      <Search
+        aria-hidden="true"
+        class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400"
+      />
 
       <input
         :id="`${listboxId}-input`"
         :value="modelValue"
         type="search"
         autocomplete="off"
-        placeholder="Buscar cidade..."
+        :placeholder="placeholder"
         role="combobox"
         aria-autocomplete="list"
+        aria-haspopup="listbox"
+        :aria-busy="loading"
         :aria-controls="listboxId"
         :aria-expanded="showResultsPanel"
         :aria-activedescendant="activeOptionId"
@@ -147,7 +174,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         @blur="focused = false"
         @keydown.down.prevent="moveActive(1)"
         @keydown.up.prevent="moveActive(-1)"
-        @keydown.enter.prevent="chooseActive"
+        @keydown.enter="handleEnter"
         @keydown.esc="close"
       >
 
@@ -174,7 +201,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         <p>{{ error }}</p>
         <button
           type="button"
-          class="mt-3 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          class="mt-3 min-h-11 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           @click="search(modelValue)"
         >
           Tentar novamente

@@ -68,7 +68,7 @@ function submit(): void {
         </p>
         <Link
           href="/"
-          class="shrink-0 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
+          class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
         >
           Voltar ao clima
         </Link>
@@ -92,11 +92,13 @@ function submit(): void {
       >
         <div class="grid items-start gap-4 md:grid-cols-[1fr_auto_1fr]">
           <div class="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3 sm:rounded-3xl sm:p-4">
-            <label class="mb-3 block text-left text-xs font-semibold tracking-wider uppercase opacity-65">
+            <p class="mb-3 text-left text-xs font-semibold tracking-wider uppercase opacity-75">
               Primeira cidade
-            </label>
+            </p>
             <LocationSearch
               v-model="leftQuery"
+              label="Buscar primeira cidade"
+              placeholder="Buscar primeira cidade..."
               @select="selectLeft"
             />
           </div>
@@ -108,11 +110,13 @@ function submit(): void {
           </div>
 
           <div class="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3 sm:rounded-3xl sm:p-4">
-            <label class="mb-3 block text-left text-xs font-semibold tracking-wider uppercase opacity-65">
+            <p class="mb-3 text-left text-xs font-semibold tracking-wider uppercase opacity-75">
               Segunda cidade
-            </label>
+            </p>
             <LocationSearch
               v-model="rightQuery"
+              label="Buscar segunda cidade"
+              placeholder="Buscar segunda cidade..."
               @select="selectRight"
             />
           </div>

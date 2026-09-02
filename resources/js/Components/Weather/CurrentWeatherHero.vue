@@ -31,8 +31,20 @@ const locationDetail = computed(() => [props.location.state, props.location.coun
       {{ current.description }}
     </p>
     <div class="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm opacity-80">
-      <span class="flex items-center gap-2"><ThermometerSnowflake class="size-4" /> Mín. {{ Math.round(current.minTemperature) }}°</span>
-      <span class="flex items-center gap-2"><ThermometerSun class="size-4" /> Máx. {{ Math.round(current.maxTemperature) }}°</span>
+      <span class="flex items-center gap-2">
+        <ThermometerSnowflake
+          aria-hidden="true"
+          class="size-4"
+        />
+        Mín. {{ Math.round(current.minTemperature) }}°
+      </span>
+      <span class="flex items-center gap-2">
+        <ThermometerSun
+          aria-hidden="true"
+          class="size-4"
+        />
+        Máx. {{ Math.round(current.maxTemperature) }}°
+      </span>
     </div>
   </section>
 </template>

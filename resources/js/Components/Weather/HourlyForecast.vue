@@ -2,7 +2,7 @@
 import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { ForecastPeriodData } from '@/Types/weather';
-import { weatherSymbol } from '@/Utils/weather';
+import { weatherConditionLabel, weatherSymbol } from '@/Utils/weather';
 
 const props = defineProps<{
   periods: ForecastPeriodData[];
@@ -128,6 +128,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           >
             {{ weatherSymbol(period.condition, period.isDaytime) }}
           </p>
+          <span class="sr-only">{{ weatherConditionLabel(period.condition) }}</span>
           <p class="text-lg font-semibold">
             {{ Math.round(period.temperature) }}°
           </p>

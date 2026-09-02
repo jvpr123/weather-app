@@ -41,7 +41,7 @@ const metrics = computed(() => [
       :key="metric.label"
       class="min-w-0 rounded-2xl border border-white/15 bg-white/10 px-3 py-4 backdrop-blur sm:rounded-3xl sm:px-4 sm:py-5"
     >
-      <div class="flex items-center gap-2 opacity-65">
+      <div class="flex items-center gap-2 opacity-75">
         <component
           :is="metric.icon"
           aria-hidden="true"

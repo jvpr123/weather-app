@@ -45,7 +45,7 @@ function locationDetail(city: ComparedCityData): string {
         <h3 class="line-clamp-2 min-h-12 content-center text-base leading-6 font-semibold sm:min-h-0 sm:text-xl">
           {{ city.location.name }}
         </h3>
-        <p class="mt-1 truncate text-xs opacity-60 sm:text-sm">
+        <p class="mt-1 truncate text-xs opacity-70 sm:text-sm">
           {{ locationDetail(city) }}
         </p>
         <p class="mt-4 text-4xl font-light tracking-tight sm:mt-5 sm:text-6xl">
@@ -60,7 +60,7 @@ function locationDetail(city: ComparedCityData): string {
 
         <dl class="mt-5 grid gap-3 text-xs sm:mt-6 sm:text-sm">
           <div class="flex justify-between gap-2">
-            <dt class="opacity-60">
+            <dt class="opacity-75">
               Umidade
             </dt>
             <dd class="font-medium">
@@ -68,7 +68,7 @@ function locationDetail(city: ComparedCityData): string {
             </dd>
           </div>
           <div class="flex justify-between gap-2">
-            <dt class="opacity-60">
+            <dt class="opacity-75">
               Chuva
             </dt>
             <dd class="font-medium">
@@ -76,7 +76,7 @@ function locationDetail(city: ComparedCityData): string {
             </dd>
           </div>
           <div class="flex justify-between gap-2">
-            <dt class="opacity-60">
+            <dt class="opacity-75">
               Vento
             </dt>
             <dd class="font-medium">
@@ -102,6 +102,11 @@ function locationDetail(city: ComparedCityData): string {
           </div>
           <div class="mt-2 h-2 overflow-hidden rounded-full bg-black/20">
             <div
+              role="progressbar"
+              :aria-label="`Outdoor Score de ${city.location.name}`"
+              :aria-valuenow="city.outdoorScore"
+              aria-valuemin="0"
+              aria-valuemax="10"
               class="h-full rounded-full bg-cyan-200 transition-[width] duration-500"
               :style="{ width: `${city.outdoorScore * 10}%` }"
             />
@@ -111,7 +116,7 @@ function locationDetail(city: ComparedCityData): string {
       <p class="mt-6 border-t border-white/10 pt-5 text-sm leading-6 text-cyan-50">
         {{ recommendation }}
       </p>
-      <p class="mt-2 text-xs opacity-50">
+      <p class="mt-2 text-xs opacity-70">
         Score heurístico da aplicação; não representa um índice científico.
       </p>
     </div>

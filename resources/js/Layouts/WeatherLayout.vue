@@ -170,21 +170,23 @@ async function useCurrentLocation(): Promise<void> {
 
         <WeatherTabs v-model="activeTab">
           <section
-            v-if="activeTab === 'current'"
+            v-show="activeTab === 'current'"
             id="weather-panel-current"
             role="tabpanel"
             aria-labelledby="weather-tab-current"
-            class="py-4"
+            tabindex="0"
+            class="rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           >
             <WeatherMetrics :current="dashboard.current" />
           </section>
 
           <section
-            v-else
+            v-show="activeTab === 'forecast'"
             id="weather-panel-forecast"
             role="tabpanel"
             aria-labelledby="weather-tab-forecast"
-            class="grid gap-7 py-4"
+            tabindex="0"
+            class="grid gap-7 rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           >
             <HourlyForecast
               :periods="dashboard.hourly"

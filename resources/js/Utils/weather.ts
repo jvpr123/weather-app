@@ -105,3 +105,22 @@ export function weatherSymbol(condition: string, isDaytime = true): string {
       return '☁️';
   }
 }
+
+export function weatherConditionLabel(condition: string): string {
+  switch (condition) {
+    case 'Clear':
+      return 'Céu limpo';
+    case 'Rain':
+      return 'Chuva';
+    case 'Drizzle':
+      return 'Garoa';
+    case 'Thunderstorm':
+      return 'Tempestade';
+    case 'Snow':
+      return 'Neve';
+    case 'Clouds':
+      return 'Nublado';
+    default:
+      return 'Condição variável';
+  }
+}

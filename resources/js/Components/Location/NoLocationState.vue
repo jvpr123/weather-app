@@ -97,7 +97,7 @@ const locationDetail = computed(() => props.coordinates
         <h1 class="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl">
           {{ currentContent.title }}
         </h1>
-        <p class="mx-auto mt-4 max-w-md text-base leading-7 opacity-70">
+        <p class="mx-auto mt-4 max-w-md text-base leading-7 opacity-75">
           {{ currentContent.description }}
         </p>
         <p
@@ -108,7 +108,7 @@ const locationDetail = computed(() => props.coordinates
         </p>
       </div>
 
-      <p class="mt-6 text-xs leading-5 opacity-50 sm:mt-8">
+      <p class="mt-6 text-xs leading-5 opacity-65 sm:mt-8">
         Sua localização é usada somente para encontrar a previsão da sua região.
       </p>
     </div>
