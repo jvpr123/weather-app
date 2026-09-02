@@ -52,3 +52,11 @@ it('uses cloudy as the fallback theme', function (string $condition, int $timest
 it('treats sunrise and sunset themselves as daytime', function (int $timestamp) {
     expect((new WeatherThemeResolver)->resolve('Clear', 6, 18, $timestamp))->toBe('clear-day');
 })->with([6, 18]);
+
+it('switches to night immediately outside the daylight boundaries', function (int $timestamp) {
+    expect((new WeatherThemeResolver)->resolve('Clear', 600, 1800, $timestamp))
+        ->toBe('clear-night');
+})->with([
+    'one second before sunrise' => 599,
+    'one second after sunset' => 1801,
+]);

@@ -17,9 +17,9 @@ it('accepts coordinate boundary values', function () {
 it('rejects invalid latitudes', function (float $latitude) {
     expect(fn () => new Coordinates($latitude, 0))
         ->toThrow(InvalidArgumentException::class, 'Latitude');
-})->with([-90.01, 90.01, INF, NAN]);
+})->with([-90.01, 90.01, -INF, INF, NAN]);
 
 it('rejects invalid longitudes', function (float $longitude) {
     expect(fn () => new Coordinates(0, $longitude))
         ->toThrow(InvalidArgumentException::class, 'Longitude');
-})->with([-180.01, 180.01, INF, NAN]);
+})->with([-180.01, 180.01, -INF, INF, NAN]);

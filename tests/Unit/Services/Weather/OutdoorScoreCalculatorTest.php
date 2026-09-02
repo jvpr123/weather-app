@@ -69,3 +69,56 @@ it('always keeps the score between zero and ten', function (
     'extreme heat' => [100.0, 2.0, 200, 100.0],
     'extreme cold' => [-100.0, -1.0, -50, -10.0],
 ]);
+
+it('keeps the ideal range boundaries at the maximum score', function (
+    float $temperature,
+    int $humidity,
+    float $windSpeed,
+) {
+    expect((new OutdoorScoreCalculator)->calculate(
+        temperature: $temperature,
+        rainProbability: 0,
+        humidity: $humidity,
+        windSpeed: $windSpeed,
+        condition: 'Clear',
+    ))->toBe(10.0);
+})->with([
+    'lower boundaries' => [18.0, 40, 5.0],
+    'upper boundaries' => [26.0, 70, 5.0],
+]);
+
+it('clamps rain probability before applying its weight', function (
+    float $rainProbability,
+    float $expectedScore,
+) {
+    expect((new OutdoorScoreCalculator)->calculate(
+        temperature: 22,
+        rainProbability: $rainProbability,
+        humidity: 55,
+        windSpeed: 2,
+        condition: 'Clear',
+    ))->toBe($expectedScore);
+})->with([
+    'below zero' => [-0.5, 10.0],
+    'above one' => [1.5, 7.0],
+]);
+
+it('applies the configured condition contribution', function (
+    string $condition,
+    float $expectedScore,
+) {
+    expect((new OutdoorScoreCalculator)->calculate(
+        temperature: 22,
+        rainProbability: 0,
+        humidity: 55,
+        windSpeed: 2,
+        condition: $condition,
+    ))->toBe($expectedScore);
+})->with([
+    'clear' => ['Clear', 10.0],
+    'clouds' => ['Clouds', 9.8],
+    'drizzle' => ['Drizzle', 9.5],
+    'rain' => ['Rain', 9.3],
+    'thunderstorm' => ['Thunderstorm', 9.1],
+    'unknown fallback' => ['Mist', 9.4],
+]);
