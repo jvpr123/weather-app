@@ -48,23 +48,29 @@ const content: Record<GeolocationStatus, StateContent> = {
   },
 };
 
-const currentContent = computed<StateContent>(() => props.resolvingLocation
-  ? {
-      eyebrow: 'Localização encontrada',
-      title: 'Identificando sua cidade',
-      description: 'Estamos associando suas coordenadas a uma localidade próxima.',
-    }
-  : content[props.status]);
+const currentContent = computed<StateContent>(() =>
+  props.resolvingLocation
+    ? {
+        eyebrow: 'Localização encontrada',
+        title: 'Identificando sua cidade',
+        description: 'Estamos associando suas coordenadas a uma localidade próxima.',
+      }
+    : content[props.status],
+);
 
-const locationDetail = computed(() => props.coordinates
-  ? `${props.coordinates.latitude.toFixed(4)}, ${props.coordinates.longitude.toFixed(4)}`
-  : null);
+const locationDetail = computed(() =>
+  props.coordinates
+    ? `${props.coordinates.latitude.toFixed(4)}, ${props.coordinates.longitude.toFixed(4)}`
+    : null,
+);
 </script>
 
 <template>
   <section class="flex flex-1 items-center justify-center py-8 text-center sm:py-10">
     <div class="w-full max-w-xl">
-      <div class="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur sm:mb-8 sm:size-28 md:size-32">
+      <div
+        class="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur sm:mb-8 sm:size-28 md:size-32"
+      >
         <span
           aria-hidden="true"
           class="absolute inset-3 rounded-full border border-cyan-200/10 motion-safe:animate-pulse"
@@ -82,11 +88,7 @@ const locationDetail = computed(() => props.coordinates
             stroke-linejoin="round"
             d="M12 21s6-5.3 6-11a6 6 0 1 0-12 0c0 5.7 6 11 6 11Z"
           />
-          <circle
-            cx="12"
-            cy="10"
-            r="2.25"
-          />
+          <circle cx="12" cy="10" r="2.25" />
         </svg>
       </div>
 
@@ -100,10 +102,7 @@ const locationDetail = computed(() => props.coordinates
         <p class="mx-auto mt-4 max-w-md text-base leading-7 opacity-75">
           {{ currentContent.description }}
         </p>
-        <p
-          v-if="locationDetail"
-          class="mt-3 font-mono text-sm text-cyan-100"
-        >
+        <p v-if="locationDetail" class="mt-3 font-mono text-sm text-cyan-100">
           {{ locationDetail }}
         </p>
       </div>

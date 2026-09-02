@@ -87,10 +87,7 @@ function handleTouchEnd(event: TouchEvent): void {
 </script>
 
 <template>
-  <div
-    @touchstart.passive="handleTouchStart"
-    @touchend.passive="handleTouchEnd"
-  >
+  <div @touchstart.passive="handleTouchStart" @touchend.passive="handleTouchEnd">
     <div
       role="tablist"
       aria-label="Seções da previsão"

@@ -51,10 +51,7 @@ export function useReverseGeocoding() {
       });
 
       if (!response.ok) {
-        throw await apiRequestError(
-          response,
-          'Não foi possível identificar sua cidade agora.',
-        );
+        throw await apiRequestError(response, 'Não foi possível identificar sua cidade agora.');
       }
 
       const payload: unknown = await response.json();

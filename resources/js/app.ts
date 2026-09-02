@@ -9,9 +9,11 @@ const appName = import.meta.env.VITE_APP_NAME ?? 'WeatherLens';
 const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue');
 
 createInertiaApp({
-    title: (title) => (title ? `${title} — ${appName}` : appName),
-    resolve: (name) => resolvePageComponent<DefineComponent>(`./Pages/${name}.vue`, pages),
-    setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) }).use(plugin).mount(el);
-    },
+  title: (title) => (title ? `${title} — ${appName}` : appName),
+  resolve: (name) => resolvePageComponent<DefineComponent>(`./Pages/${name}.vue`, pages),
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el);
+  },
 });

@@ -29,27 +29,30 @@ export function isCurrentWeatherData(value: unknown): value is CurrentWeatherDat
     return false;
   }
 
-  return hasNumbers(value, [
-    'temperature',
-    'feelsLike',
-    'minTemperature',
-    'maxTemperature',
-    'humidity',
-    'pressure',
-    'windSpeed',
-    'weatherCode',
-    'sunrise',
-    'sunset',
-    'timestamp',
-  ])
-    && typeof value.condition === 'string'
-    && typeof value.description === 'string'
-    && typeof value.icon === 'string';
+  return (
+    hasNumbers(value, [
+      'temperature',
+      'feelsLike',
+      'minTemperature',
+      'maxTemperature',
+      'humidity',
+      'pressure',
+      'windSpeed',
+      'weatherCode',
+      'sunrise',
+      'sunset',
+      'timestamp',
+    ]) &&
+    typeof value.condition === 'string' &&
+    typeof value.description === 'string' &&
+    typeof value.icon === 'string'
+  );
 }
 
 function isForecastPeriod(value: unknown): value is ForecastPeriodData {
-  return isRecord(value)
-    && hasNumbers(value, [
+  return (
+    isRecord(value) &&
+    hasNumbers(value, [
       'datetime',
       'temperature',
       'minTemperature',
@@ -57,20 +60,19 @@ function isForecastPeriod(value: unknown): value is ForecastPeriodData {
       'weatherCode',
       'probabilityOfPrecipitation',
       'windSpeed',
-    ])
-    && typeof value.condition === 'string'
-    && typeof value.isDaytime === 'boolean';
+    ]) &&
+    typeof value.condition === 'string' &&
+    typeof value.isDaytime === 'boolean'
+  );
 }
 
 function isDailyForecast(value: unknown): value is DailyForecastData {
-  return isRecord(value)
-    && typeof value.date === 'string'
-    && typeof value.dominantCondition === 'string'
-    && hasNumbers(value, [
-      'minTemperature',
-      'maxTemperature',
-      'maxRainProbability',
-    ]);
+  return (
+    isRecord(value) &&
+    typeof value.date === 'string' &&
+    typeof value.dominantCondition === 'string' &&
+    hasNumbers(value, ['minTemperature', 'maxTemperature', 'maxRainProbability'])
+  );
 }
 
 export function isWeatherDashboard(value: unknown): value is WeatherDashboardData {
@@ -78,16 +80,18 @@ export function isWeatherDashboard(value: unknown): value is WeatherDashboardDat
     return false;
   }
 
-  return isLocationData(value.location)
-    && isCurrentWeatherData(value.current)
-    && Array.isArray(value.hourly)
-    && value.hourly.every(isForecastPeriod)
-    && Array.isArray(value.daily)
-    && value.daily.every(isDailyForecast)
-    && typeof value.timezoneOffset === 'number'
-    && Number.isFinite(value.timezoneOffset)
-    && typeof value.theme === 'string'
-    && WEATHER_THEMES.includes(value.theme as WeatherTheme);
+  return (
+    isLocationData(value.location) &&
+    isCurrentWeatherData(value.current) &&
+    Array.isArray(value.hourly) &&
+    value.hourly.every(isForecastPeriod) &&
+    Array.isArray(value.daily) &&
+    value.daily.every(isDailyForecast) &&
+    typeof value.timezoneOffset === 'number' &&
+    Number.isFinite(value.timezoneOffset) &&
+    typeof value.theme === 'string' &&
+    WEATHER_THEMES.includes(value.theme as WeatherTheme)
+  );
 }
 
 export function weatherSymbol(condition: string, isDaytime = true): string {

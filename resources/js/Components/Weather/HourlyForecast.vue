@@ -61,22 +61,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 </script>
 
 <template>
-  <section
-    class="min-w-0 max-w-full"
-    aria-labelledby="hourly-title"
-  >
+  <section class="min-w-0 max-w-full" aria-labelledby="hourly-title">
     <div class="flex items-center justify-between gap-3 px-1">
-      <h2
-        id="hourly-title"
-        class="text-sm font-semibold tracking-[0.12em] uppercase opacity-75"
-      >
+      <h2 id="hourly-title" class="text-sm font-semibold tracking-[0.12em] uppercase opacity-75">
         Próximas horas
       </h2>
 
-      <div
-        class="flex gap-2"
-        aria-label="Navegação da previsão por hora"
-      >
+      <div class="flex gap-2" aria-label="Navegação da previsão por hora">
         <button
           type="button"
           :disabled="!canScrollLeft"
@@ -84,10 +75,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(-1)"
         >
-          <ChevronLeft
-            aria-hidden="true"
-            class="size-4"
-          />
+          <ChevronLeft aria-hidden="true" class="size-4" />
         </button>
         <button
           type="button"
@@ -96,10 +84,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(1)"
         >
-          <ChevronRight
-            aria-hidden="true"
-            class="size-4"
-          />
+          <ChevronRight aria-hidden="true" class="size-4" />
         </button>
       </div>
     </div>
@@ -122,20 +107,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           >
             {{ formatHour(period.datetime) }}h
           </time>
-          <p
-            aria-hidden="true"
-            class="my-3 text-2xl"
-          >
+          <p aria-hidden="true" class="my-3 text-2xl">
             {{ weatherSymbol(period.condition, period.isDaytime) }}
           </p>
           <span class="sr-only">{{ weatherConditionLabel(period.condition) }}</span>
-          <p class="text-lg font-semibold">
-            {{ Math.round(period.temperature) }}°
-          </p>
-          <p
-            v-if="period.probabilityOfPrecipitation > 0.1"
-            class="mt-1 text-xs text-cyan-100"
-          >
+          <p class="text-lg font-semibold">{{ Math.round(period.temperature) }}°</p>
+          <p v-if="period.probabilityOfPrecipitation > 0.1" class="mt-1 text-xs text-cyan-100">
             {{ Math.round(period.probabilityOfPrecipitation * 100) }}%
           </p>
         </article>

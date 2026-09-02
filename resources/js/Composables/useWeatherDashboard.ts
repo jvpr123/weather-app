@@ -9,9 +9,11 @@ interface DashboardResponse {
 }
 
 function isDashboardResponse(value: unknown): value is DashboardResponse {
-  return typeof value === 'object'
-    && value !== null
-    && isWeatherDashboard((value as Record<string, unknown>).data);
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    isWeatherDashboard((value as Record<string, unknown>).data)
+  );
 }
 
 export function useWeatherDashboard() {
