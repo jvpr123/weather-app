@@ -9,9 +9,17 @@ export function isLocationData(value: unknown): value is LocationData {
 
   return (
     typeof location.name === 'string' &&
+    location.name.trim() !== '' &&
     (typeof location.state === 'string' || location.state === null) &&
     typeof location.country === 'string' &&
+    location.country.length === 2 &&
     typeof location.latitude === 'number' &&
-    typeof location.longitude === 'number'
+    Number.isFinite(location.latitude) &&
+    location.latitude >= -90 &&
+    location.latitude <= 90 &&
+    typeof location.longitude === 'number' &&
+    Number.isFinite(location.longitude) &&
+    location.longitude >= -180 &&
+    location.longitude <= 180
   );
 }

@@ -47,6 +47,14 @@ function formatHour(timestamp: number): string {
   }).format(new Date((timestamp + props.timezoneOffset) * 1000));
 }
 
+function formatPeriodDate(timestamp: number): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+  }).format(new Date((timestamp + props.timezoneOffset) * 1000));
+}
+
 onMounted(async () => {
   await nextTick();
   updateScrollState();
@@ -72,7 +80,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollLeft"
           aria-label="Ver horas anteriores"
-          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(-1)"
         >
           <ChevronLeft aria-hidden="true" class="size-4" />
@@ -81,7 +89,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollRight"
           aria-label="Ver próximas horas"
-          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(1)"
         >
           <ChevronRight aria-hidden="true" class="size-4" />
@@ -103,9 +111,10 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
         >
           <time
             :datetime="new Date(period.datetime * 1000).toISOString()"
-            class="text-sm opacity-75"
+            class="block tabular-nums"
           >
-            {{ formatHour(period.datetime) }}h
+            <span class="block text-xs opacity-60">{{ formatPeriodDate(period.datetime) }}</span>
+            <span class="mt-1 block text-sm opacity-75">{{ formatHour(period.datetime) }}h</span>
           </time>
           <p aria-hidden="true" class="my-3 text-2xl">
             {{ weatherSymbol(period.condition, period.isDaytime) }}

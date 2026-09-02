@@ -191,7 +191,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         <p>{{ error }}</p>
         <button
           type="button"
-          class="mt-3 min-h-11 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          class="mt-3 min-h-11 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           @click="search(modelValue)"
         >
           Tentar novamente
@@ -215,7 +215,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
           :key="`${location.latitude}:${location.longitude}`"
           role="option"
           :aria-selected="activeIndex === index"
-          class="cursor-pointer rounded-xl px-3 py-3 text-left transition"
+          class="cursor-pointer rounded-xl px-3 py-3 text-left transition active:scale-[0.99] active:bg-white/15"
           :class="
             activeIndex === index ? 'bg-cyan-300/15 text-white' : 'text-slate-200 hover:bg-white/10'
           "

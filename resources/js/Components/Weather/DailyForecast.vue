@@ -2,23 +2,32 @@
 import type { DailyForecastData } from '@/Types/weather';
 import { weatherConditionLabel, weatherSymbol } from '@/Utils/weather';
 
-defineProps<{
+const props = defineProps<{
   days: DailyForecastData[];
+  timezoneOffset: number;
 }>();
 
 function formatDay(date: string): string {
-  const today = new Date().toISOString().slice(0, 10);
+  const localToday = new Date(Date.now() + props.timezoneOffset * 1000).toISOString().slice(0, 10);
+  const forecastDate = new Date(`${date}T12:00:00Z`);
+  const dayAndMonth = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+  }).format(forecastDate);
 
-  if (date === today) {
-    return 'Hoje';
+  if (date === localToday) {
+    return `Hoje, ${dayAndMonth}`;
   }
 
   return new Intl.DateTimeFormat('pt-BR', {
     weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
     timeZone: 'UTC',
   })
-    .format(new Date(`${date}T12:00:00Z`))
-    .replace('.', '');
+    .format(forecastDate)
+    .replaceAll('.', '');
 }
 </script>
 

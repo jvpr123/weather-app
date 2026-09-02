@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ArrowLeftRight, LoaderCircle } from '@lucide/vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { ArrowLeft, ArrowLeftRight, LoaderCircle } from '@lucide/vue';
+import { Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import BrandMark from '@/Components/BrandMark.vue';
 import ComparisonResult from '@/Components/Comparison/ComparisonResult.vue';
+import HeaderNavigationLink from '@/Components/HeaderNavigationLink.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import RequestErrorState from '@/Components/RequestErrorState.vue';
 import { useCityComparison } from '@/Composables/useCityComparison';
@@ -52,7 +54,7 @@ function submit(): void {
   <Head title="Comparar cidades" />
 
   <main
-    class="relative isolate min-h-screen overflow-x-hidden bg-slate-950 px-3 py-4 text-white sm:px-5 sm:py-6 lg:px-8"
+    class="relative isolate min-h-screen overflow-x-hidden bg-slate-950 px-3 py-3 text-white sm:px-5 sm:py-4 lg:px-8"
   >
     <div
       aria-hidden="true"
@@ -64,14 +66,13 @@ function submit(): void {
     />
 
     <div class="mx-auto w-full max-w-5xl">
-      <header class="flex items-center justify-between gap-3 sm:gap-4">
-        <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">WeatherLens</p>
-        <Link
-          href="/"
-          class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
-        >
-          Voltar ao clima
-        </Link>
+      <header
+        class="relative z-20 flex items-start justify-between gap-3 py-2 sm:items-center sm:gap-5"
+      >
+        <BrandMark />
+        <HeaderNavigationLink href="/" label="Voltar ao clima">
+          <ArrowLeft aria-hidden="true" class="size-5 shrink-0" />
+        </HeaderNavigationLink>
       </header>
 
       <section class="mx-auto mt-8 max-w-2xl text-center sm:mt-12">
@@ -131,7 +132,7 @@ function submit(): void {
         <button
           type="submit"
           :disabled="!canCompare"
-          class="mx-auto mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-48"
+          class="mx-auto mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-48"
         >
           <LoaderCircle v-if="loading" aria-hidden="true" class="size-5 motion-safe:animate-spin" />
           <ArrowLeftRight v-else aria-hidden="true" class="size-5" />
