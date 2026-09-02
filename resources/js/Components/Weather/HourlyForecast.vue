@@ -65,7 +65,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
     class="min-w-0 max-w-full"
     aria-labelledby="hourly-title"
   >
-    <div class="flex items-center justify-between gap-4 px-1">
+    <div class="flex items-center justify-between gap-3 px-1">
       <h2
         id="hourly-title"
         class="text-sm font-semibold tracking-[0.12em] uppercase opacity-75"
@@ -81,7 +81,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollLeft"
           aria-label="Ver horas anteriores"
-          class="inline-flex size-9 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(-1)"
         >
           <ChevronLeft
@@ -93,7 +93,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
           type="button"
           :disabled="!canScrollRight"
           aria-label="Ver próximas horas"
-          class="inline-flex size-9 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
+          class="inline-flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-default disabled:opacity-30"
           @click="moveCarousel(1)"
         >
           <ChevronRight
@@ -108,13 +108,13 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
       <div
         ref="carousel"
         data-horizontal-scroll
-        class="flex max-w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 pr-6 scroll-smooth touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="flex max-w-full snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain pb-2 pr-6 scroll-smooth touch-pan-x motion-reduce:scroll-auto sm:gap-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         @scroll.passive="updateScrollState"
       >
         <article
           v-for="period in periods"
           :key="period.datetime"
-          class="min-w-20 snap-start rounded-3xl border border-white/15 bg-white/10 px-3 py-4 text-center backdrop-blur"
+          class="min-w-20 snap-start rounded-2xl border border-white/15 bg-white/10 px-3 py-4 text-center backdrop-blur sm:min-w-24 sm:rounded-3xl"
         >
           <time
             :datetime="new Date(period.datetime * 1000).toISOString()"
@@ -142,12 +142,12 @@ onBeforeUnmount(() => resizeObserver?.disconnect());
 
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-black/30 to-transparent backdrop-blur-[2px] transition-opacity duration-300"
+        class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-black/30 to-transparent backdrop-blur-[2px] transition-opacity duration-300 sm:w-12"
         :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
       />
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-black/30 to-transparent backdrop-blur-[2px] transition-opacity duration-300"
+        class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-black/30 to-transparent backdrop-blur-[2px] transition-opacity duration-300 sm:w-12"
         :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
       />
     </div>

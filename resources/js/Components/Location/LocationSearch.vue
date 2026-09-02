@@ -141,7 +141,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         :aria-expanded="showResultsPanel"
         :aria-activedescendant="activeOptionId"
         class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
-        :class="$slots.trailing ? 'pr-28' : 'pr-12'"
+        :class="$slots.trailing ? 'pr-16' : 'pr-12'"
         @input="updateValue"
         @focus="focused = true; open = modelValue.trim().length >= 2"
         @blur="focused = false"
@@ -194,7 +194,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         :id="listboxId"
         role="listbox"
         aria-label="Resultados da busca"
-        class="max-h-72 overflow-y-auto p-1.5"
+        class="max-h-[min(18rem,50vh)] overflow-y-auto p-1.5"
       >
         <li
           v-for="(location, index) in results"

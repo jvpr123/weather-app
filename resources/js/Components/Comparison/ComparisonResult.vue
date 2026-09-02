@@ -35,30 +35,30 @@ function locationDetail(city: ComparedCityData): string {
       Resultado da comparação
     </h2>
 
-    <div class="grid grid-cols-2 overflow-hidden rounded-3xl border border-white/15 bg-white/10 backdrop-blur-xl">
+    <div class="grid grid-cols-2 overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl sm:rounded-3xl">
       <article
         v-for="(city, index) in cities"
         :key="`${city.location.latitude}:${city.location.longitude}`"
-        class="min-w-0 px-3 py-6 text-center sm:px-6"
+        class="min-w-0 px-2.5 py-5 text-center sm:px-6 sm:py-6"
         :class="{ 'border-l border-white/15': index === 1 }"
       >
-        <h3 class="truncate text-base font-semibold sm:text-xl">
+        <h3 class="line-clamp-2 min-h-12 content-center text-base leading-6 font-semibold sm:min-h-0 sm:text-xl">
           {{ city.location.name }}
         </h3>
         <p class="mt-1 truncate text-xs opacity-60 sm:text-sm">
           {{ locationDetail(city) }}
         </p>
-        <p class="mt-5 text-5xl font-light tracking-tight sm:text-6xl">
+        <p class="mt-4 text-4xl font-light tracking-tight sm:mt-5 sm:text-6xl">
           {{ Math.round(city.current.temperature) }}°
         </p>
-        <p class="mt-2 inline-flex items-center justify-center gap-2 capitalize">
+        <p class="mt-2 flex min-h-12 flex-col items-center justify-center gap-1 text-sm capitalize sm:min-h-0 sm:flex-row sm:gap-2 sm:text-base">
           <span aria-hidden="true">
             {{ weatherSymbol(city.current.condition, !city.current.icon.endsWith('n')) }}
           </span>
-          <span class="hidden sm:inline">{{ city.current.description }}</span>
+          <span class="line-clamp-2">{{ city.current.description }}</span>
         </p>
 
-        <dl class="mt-6 grid gap-3 text-sm">
+        <dl class="mt-5 grid gap-3 text-xs sm:mt-6 sm:text-sm">
           <div class="flex justify-between gap-2">
             <dt class="opacity-60">
               Umidade
@@ -87,7 +87,7 @@ function locationDetail(city: ComparedCityData): string {
       </article>
     </div>
 
-    <div class="mt-6 rounded-3xl border border-white/15 bg-white/10 p-5 backdrop-blur-xl sm:p-6">
+    <div class="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl sm:mt-6 sm:rounded-3xl sm:p-6">
       <h3 class="text-sm font-semibold tracking-[0.12em] uppercase opacity-75">
         Outdoor Score
       </h3>

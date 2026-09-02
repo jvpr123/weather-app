@@ -31,7 +31,7 @@ function formatDay(date: string): string {
     >
       Próximos dias
     </h2>
-    <div class="mt-3 w-full max-w-full overflow-hidden rounded-3xl border border-white/15 bg-white/10 backdrop-blur">
+    <div class="mt-3 w-full max-w-full overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur sm:rounded-3xl">
       <article
         v-for="(day, index) in days"
         :key="day.date"

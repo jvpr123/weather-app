@@ -1,7 +1,7 @@
 <template>
   <section
     aria-hidden="true"
-    class="px-2 py-8 text-center motion-safe:animate-pulse md:py-12"
+    class="px-1 py-7 text-center motion-safe:animate-pulse sm:px-2 sm:py-9 lg:py-12"
   >
     <div class="mx-auto h-4 w-48 rounded-full bg-white/15" />
     <div class="mx-auto mt-5 h-24 w-32 rounded-3xl bg-white/15 sm:h-28 sm:w-40" />

@@ -17,9 +17,9 @@ defineEmits<{
   <section
     role="alert"
     class="text-center"
-    :class="compact ? 'rounded-2xl border border-rose-200/20 bg-rose-200/10 px-4 py-4' : 'flex flex-1 items-center justify-center py-8'"
+    :class="compact ? 'rounded-2xl border border-rose-200/20 bg-rose-200/10 px-3 py-4 sm:px-4' : 'flex flex-1 items-center justify-center py-8'"
   >
-    <div :class="compact ? '' : 'w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 px-6 py-10 backdrop-blur'">
+    <div :class="compact ? '' : 'w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 px-4 py-8 backdrop-blur sm:rounded-3xl sm:px-6 sm:py-10'">
       <p class="font-semibold text-rose-50">
         {{ message }}
       </p>

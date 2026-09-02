@@ -16,8 +16,8 @@ const locationDetail = computed(() => [props.location.state, props.location.coun
 </script>
 
 <template>
-  <section class="px-2 py-8 text-center md:py-12">
-    <p class="text-sm font-semibold tracking-[0.16em] uppercase opacity-75">
+  <section class="px-1 py-7 text-center sm:px-2 sm:py-9 lg:py-12">
+    <p class="mx-auto max-w-2xl text-sm font-semibold tracking-[0.12em] break-words uppercase opacity-75 sm:tracking-[0.16em]">
       {{ location.name }}<span v-if="locationDetail">, {{ locationDetail }}</span>
     </p>
     <div class="mt-4 flex items-start justify-center">
@@ -30,9 +30,9 @@ const locationDetail = computed(() => [props.location.state, props.location.coun
       <span aria-hidden="true">{{ weatherSymbol(current.condition, !current.icon.endsWith('n')) }}</span>
       {{ current.description }}
     </p>
-    <div class="mt-4 flex justify-center gap-6 text-sm opacity-80">
-      <span class="flex gap-2"><ThermometerSnowflake class="size-4" /> Mín. {{ Math.round(current.minTemperature) }}°</span>
-      <span class="flex gap-2"><ThermometerSun class="size-4" /> Máx. {{ Math.round(current.maxTemperature) }}°</span>
+    <div class="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm opacity-80">
+      <span class="flex items-center gap-2"><ThermometerSnowflake class="size-4" /> Mín. {{ Math.round(current.minTemperature) }}°</span>
+      <span class="flex items-center gap-2"><ThermometerSun class="size-4" /> Máx. {{ Math.round(current.maxTemperature) }}°</span>
     </div>
   </section>
 </template>

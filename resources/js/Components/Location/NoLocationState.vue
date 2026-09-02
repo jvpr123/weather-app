@@ -62,16 +62,16 @@ const locationDetail = computed(() => props.coordinates
 </script>
 
 <template>
-  <section class="flex flex-1 items-center justify-center py-8 text-center">
+  <section class="flex flex-1 items-center justify-center py-8 text-center sm:py-10">
     <div class="w-full max-w-xl">
-      <div class="relative mx-auto mb-8 flex size-28 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur md:size-32">
+      <div class="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur sm:mb-8 sm:size-28 md:size-32">
         <span
           aria-hidden="true"
-          class="absolute inset-3 animate-pulse rounded-full border border-cyan-200/10"
+          class="absolute inset-3 rounded-full border border-cyan-200/10 motion-safe:animate-pulse"
         />
         <svg
           aria-hidden="true"
-          class="size-12 text-cyan-100 md:size-14"
+          class="size-10 text-cyan-100 sm:size-12 md:size-14"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -108,7 +108,7 @@ const locationDetail = computed(() => props.coordinates
         </p>
       </div>
 
-      <p class="mt-8 text-xs leading-5 opacity-50">
+      <p class="mt-6 text-xs leading-5 opacity-50 sm:mt-8">
         Sua localização é usada somente para encontrar a previsão da sua região.
       </p>
     </div>

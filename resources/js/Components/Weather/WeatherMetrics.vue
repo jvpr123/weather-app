@@ -34,24 +34,25 @@ const metrics = computed(() => [
 <template>
   <section
     aria-label="Métricas atuais"
-    class="grid grid-cols-2 gap-3 md:grid-cols-4"
+    class="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4"
   >
     <article
       v-for="metric in metrics"
       :key="metric.label"
-      class="rounded-3xl border border-white/15 bg-white/10 px-4 py-5 backdrop-blur"
+      class="min-w-0 rounded-2xl border border-white/15 bg-white/10 px-3 py-4 backdrop-blur sm:rounded-3xl sm:px-4 sm:py-5"
     >
       <div class="flex items-center gap-2 opacity-65">
         <component
           :is="metric.icon"
           aria-hidden="true"
+          class="size-4 shrink-0 sm:size-5"
           :stroke-width="1.75"
         />
         <p class="text-xs font-semibold tracking-wide uppercase">
           {{ metric.label }}
         </p>
       </div>
-      <p class="mt-2 text-xl font-medium">
+      <p class="mt-2 truncate text-lg font-medium sm:text-xl">
         {{ metric.value }}
       </p>
     </article>

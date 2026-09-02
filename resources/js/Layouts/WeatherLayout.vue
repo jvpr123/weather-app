@@ -79,7 +79,7 @@ async function useCurrentLocation(): Promise<void> {
 
 <template>
   <main
-    class="weather-layout relative isolate min-h-screen overflow-x-hidden px-4 py-4 text-[var(--weather-text)] transition-colors duration-500"
+    class="weather-layout relative isolate min-h-screen overflow-x-hidden px-3 py-3 text-[var(--weather-text)] transition-colors duration-500 sm:px-5 sm:py-4 lg:px-8"
     :class="theme"
   >
     <div
@@ -91,8 +91,8 @@ async function useCurrentLocation(): Promise<void> {
       class="absolute top-0 left-1/2 -z-10 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-[var(--weather-glow)] blur-3xl"
     />
 
-    <div class="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col">
-      <header class="relative z-20 flex flex-col gap-4 py-2 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100vh-2rem)]">
+      <header class="relative z-20 flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
         <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">
           WeatherLens
         </p>
@@ -137,7 +137,8 @@ async function useCurrentLocation(): Promise<void> {
           </div>
           <Link
             href="/weather/compare"
-            class="inline-flex h-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-5"
+            aria-label="Comparar cidades"
+            class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
           >
             <ArrowLeftRight
               aria-hidden="true"
