@@ -9,6 +9,10 @@ use App\DTOs\Weather\ForecastPeriodData;
 use App\Exceptions\WeatherProviderException;
 use Inertia\Testing\AssertableInertia as Assert;
 
+beforeEach(function () {
+    $this->withoutVite();
+});
+
 function comparisonEndpointQuery(array $overrides = []): string
 {
     return http_build_query(array_replace_recursive([
