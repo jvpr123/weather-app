@@ -10,6 +10,7 @@ import CurrentWeatherHero from '@/Components/Weather/CurrentWeatherHero.vue';
 import DailyForecast from '@/Components/Weather/DailyForecast.vue';
 import ForecastSkeleton from '@/Components/Weather/ForecastSkeleton.vue';
 import HourlyForecast from '@/Components/Weather/HourlyForecast.vue';
+import NoForecastState from '@/Components/Weather/NoForecastState.vue';
 import WeatherMetrics from '@/Components/Weather/WeatherMetrics.vue';
 import WeatherHeroSkeleton from '@/Components/Weather/WeatherHeroSkeleton.vue';
 import WeatherTabs from '@/Components/Weather/WeatherTabs.vue';
@@ -167,11 +168,14 @@ async function useCurrentLocation(): Promise<void> {
             tabindex="0"
             class="grid gap-7 rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           >
-            <HourlyForecast
-              :periods="dashboard.hourly"
-              :timezone-offset="dashboard.timezoneOffset"
-            />
-            <DailyForecast :days="dashboard.daily" />
+            <NoForecastState v-if="dashboard.hourly.length === 0" />
+            <template v-else>
+              <HourlyForecast
+                :periods="dashboard.hourly"
+                :timezone-offset="dashboard.timezoneOffset"
+              />
+              <DailyForecast v-if="dashboard.daily.length > 0" :days="dashboard.daily" />
+            </template>
           </section>
         </WeatherTabs>
       </template>
