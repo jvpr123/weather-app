@@ -22,3 +22,7 @@ Route::get('/weather/dashboard', GetWeatherDashboardController::class)
 
 Route::get('/weather/compare/results', CompareCitiesController::class)
     ->name('weather.compare.results');
+
+Route::get('/weather/compare', function () {
+    return Inertia::render('Weather/Compare');
+})->name('weather.compare');

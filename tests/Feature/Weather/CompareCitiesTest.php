@@ -6,6 +6,7 @@ use App\DTOs\Location\Coordinates;
 use App\DTOs\Weather\CurrentWeatherData;
 use App\DTOs\Weather\ForecastData;
 use App\DTOs\Weather\ForecastPeriodData;
+use Inertia\Testing\AssertableInertia as Assert;
 
 function comparisonEndpointQuery(array $overrides = []): string
 {
@@ -76,6 +77,14 @@ function bindComparisonEndpointProviders(): void
         }
     });
 }
+
+it('renders the city comparison page', function () {
+    $this->get('/weather/compare')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Weather/Compare')
+        );
+});
 
 it('returns a normalized city comparison', function () {
     bindComparisonEndpointProviders();
