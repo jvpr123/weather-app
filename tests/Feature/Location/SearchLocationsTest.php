@@ -97,7 +97,8 @@ it('does not expose provider failures in the public response', function () {
     $response = $this->getJson('/locations/search?q=London')
         ->assertServiceUnavailable()
         ->assertExactJson([
-            'message' => 'Não foi possível consultar o serviço de clima agora.',
+            'code' => 'weather_unavailable',
+            'message' => 'Não foi possível atualizar o clima agora.',
         ]);
 
     expect($response->getContent())->not->toContain('OpenWeather')

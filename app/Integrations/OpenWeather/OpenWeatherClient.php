@@ -3,6 +3,9 @@
 namespace App\Integrations\OpenWeather;
 
 use App\Exceptions\WeatherProviderException;
+use GuzzleHttp\Exception\ConnectTimeoutException;
+use GuzzleHttp\Exception\NetworkTimeoutException;
+use GuzzleHttp\Exception\ResponseTimeoutException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
@@ -35,8 +38,10 @@ final readonly class OpenWeatherClient
 
         try {
             $response = $this->request()->get($endpoint, $query);
-        } catch (ConnectionException) {
-            throw WeatherProviderException::network();
+        } catch (ConnectionException $exception) {
+            throw $this->isTimeout($exception)
+                ? WeatherProviderException::timeout()
+                : WeatherProviderException::network();
         }
 
         $this->ensureSuccessful($response);
@@ -81,6 +86,15 @@ final readonly class OpenWeatherClient
         }
 
         return $exception->response->status() === 429 || $exception->response->serverError();
+    }
+
+    private function isTimeout(ConnectionException $exception): bool
+    {
+        $previous = $exception->getPrevious();
+
+        return $previous instanceof ConnectTimeoutException
+            || $previous instanceof NetworkTimeoutException
+            || $previous instanceof ResponseTimeoutException;
     }
 
     private function ensureSuccessful(Response $response): void
