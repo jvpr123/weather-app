@@ -84,9 +84,14 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         return $this->mapLocation($payload[0]);
     }
 
-    public function current(Coordinates $coordinates): CurrentWeatherData
+    public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
     {
         $cacheKey = 'weather:current:'.$this->coordinateKey($coordinates);
+
+        if ($forceRefresh) {
+            $this->cache->forget($cacheKey);
+        }
+
         $payload = $this->remember($cacheKey, $this->currentWeatherTtl, function () use ($coordinates): array {
             $payload = $this->client->get('/data/2.5/weather', [
                 'lat' => $coordinates->latitude,
@@ -103,9 +108,14 @@ final readonly class OpenWeatherProvider implements CurrentWeatherProvider, Fore
         return $this->mapCurrentWeather($payload);
     }
 
-    public function forecast(Coordinates $coordinates): ForecastData
+    public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
     {
         $cacheKey = 'weather:forecast:'.$this->coordinateKey($coordinates);
+
+        if ($forceRefresh) {
+            $this->cache->forget($cacheKey);
+        }
+
         $payload = $this->remember($cacheKey, $this->forecastTtl, function () use ($coordinates): array {
             $payload = $this->client->get('/data/2.5/forecast', [
                 'lat' => $coordinates->latitude,

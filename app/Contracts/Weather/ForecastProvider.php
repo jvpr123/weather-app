@@ -7,5 +7,5 @@ use App\DTOs\Weather\ForecastData;
 
 interface ForecastProvider
 {
-    public function forecast(Coordinates $coordinates): ForecastData;
+    public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData;
 }

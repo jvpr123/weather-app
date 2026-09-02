@@ -45,11 +45,14 @@ it('orchestrates providers and domain services into a dashboard DTO', function (
     {
         public ?Coordinates $receivedCoordinates = null;
 
+        public bool $forceRefresh = false;
+
         public function __construct(private readonly CurrentWeatherData $weather) {}
 
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             $this->receivedCoordinates = $coordinates;
+            $this->forceRefresh = $forceRefresh;
 
             return $this->weather;
         }
@@ -58,11 +61,14 @@ it('orchestrates providers and domain services into a dashboard DTO', function (
     {
         public ?Coordinates $receivedCoordinates = null;
 
+        public bool $forceRefresh = false;
+
         public function __construct(private readonly ForecastPeriodData $period) {}
 
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             $this->receivedCoordinates = $coordinates;
+            $this->forceRefresh = $forceRefresh;
 
             return new ForecastData([$this->period], timezoneOffset: -10_800);
         }
@@ -74,10 +80,12 @@ it('orchestrates providers and domain services into a dashboard DTO', function (
         themeResolver: new WeatherThemeResolver,
     );
 
-    $dashboard = $action->execute($location);
+    $dashboard = $action->execute($location, forceRefresh: true);
 
     expect($currentProvider->receivedCoordinates)->toBe($coordinates)
         ->and($forecastProvider->receivedCoordinates)->toBe($coordinates)
+        ->and($currentProvider->forceRefresh)->toBeTrue()
+        ->and($forecastProvider->forceRefresh)->toBeTrue()
         ->and($dashboard->location)->toBe($location)
         ->and($dashboard->current)->toBe($current)
         ->and($dashboard->hourly)->toBe([$period])

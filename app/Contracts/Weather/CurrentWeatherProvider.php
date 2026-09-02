@@ -7,5 +7,5 @@ use App\DTOs\Weather\CurrentWeatherData;
 
 interface CurrentWeatherProvider
 {
-    public function current(Coordinates $coordinates): CurrentWeatherData;
+    public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData;
 }

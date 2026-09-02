@@ -20,6 +20,7 @@ final class WeatherDashboardRequest extends FormRequest
             'country' => ['bail', 'required', 'string', 'size:2'],
             'latitude' => ['bail', 'required', 'numeric', 'between:-90,90'],
             'longitude' => ['bail', 'required', 'numeric', 'between:-180,180'],
+            'refresh' => ['bail', 'sometimes', 'boolean'],
         ];
     }
 

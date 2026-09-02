@@ -12,7 +12,7 @@ function bindDashboardWeatherProviders(): void
 {
     app()->instance(CurrentWeatherProvider::class, new class implements CurrentWeatherProvider
     {
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             return new CurrentWeatherData(
                 temperature: 28.4,
@@ -35,7 +35,7 @@ function bindDashboardWeatherProviders(): void
 
     app()->instance(ForecastProvider::class, new class implements ForecastProvider
     {
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             return new ForecastData([
                 new ForecastPeriodData(
@@ -113,6 +113,7 @@ it('validates dashboard location input', function (array $overrides, array $erro
     'invalid country' => [['country' => 'BRA'], ['country']],
     'invalid latitude' => [['latitude' => 91], ['latitude']],
     'invalid longitude' => [['longitude' => -181], ['longitude']],
+    'invalid refresh flag' => [['refresh' => 'now'], ['refresh']],
 ]);
 
 it('returns sanitized weather error responses', function (
@@ -125,7 +126,7 @@ it('returns sanitized weather error responses', function (
     {
         public function __construct(private readonly WeatherProviderException $exception) {}
 
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             throw $this->exception;
         }
@@ -152,7 +153,7 @@ it('sanitizes forecast failures after current weather succeeds', function () {
 
     app()->instance(ForecastProvider::class, new class implements ForecastProvider
     {
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             throw WeatherProviderException::unavailable(500);
         }

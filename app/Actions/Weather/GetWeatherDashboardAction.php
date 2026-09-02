@@ -18,10 +18,10 @@ final readonly class GetWeatherDashboardAction
         private WeatherThemeResolver $themeResolver,
     ) {}
 
-    public function execute(LocationData $location): WeatherDashboardData
+    public function execute(LocationData $location, bool $forceRefresh = false): WeatherDashboardData
     {
-        $current = $this->currentWeather->current($location->coordinates);
-        $forecast = $this->forecast->forecast($location->coordinates);
+        $current = $this->currentWeather->current($location->coordinates, $forceRefresh);
+        $forecast = $this->forecast->forecast($location->coordinates, $forceRefresh);
 
         return new WeatherDashboardData(
             location: $location,

@@ -19,6 +19,7 @@ function isDashboardResponse(value: unknown): value is DashboardResponse {
 export function useWeatherDashboard() {
   const dashboard = ref<WeatherDashboardData | null>(null);
   const loading = ref(false);
+  const refreshing = ref(false);
   const error = ref<string | null>(null);
   const lastLocation = ref<LocationData | null>(null);
 
@@ -31,16 +32,20 @@ export function useWeatherDashboard() {
     controller = undefined;
     dashboard.value = null;
     loading.value = false;
+    refreshing.value = false;
     error.value = null;
   }
 
-  async function load(location: LocationData): Promise<void> {
+  async function request(location: LocationData, forceRefresh: boolean): Promise<void> {
     const sequence = ++requestSequence;
 
     controller?.abort();
     controller = new AbortController();
-    dashboard.value = null;
-    loading.value = true;
+    if (!forceRefresh) {
+      dashboard.value = null;
+    }
+    loading.value = !forceRefresh;
+    refreshing.value = forceRefresh;
     error.value = null;
     lastLocation.value = location;
 
@@ -56,7 +61,12 @@ export function useWeatherDashboard() {
         parameters.set('state', location.state);
       }
 
+      if (forceRefresh) {
+        parameters.set('refresh', '1');
+      }
+
       const response = await fetch(`/weather/dashboard?${parameters.toString()}`, {
+        cache: forceRefresh ? 'no-store' : 'default',
         headers: { Accept: 'application/json' },
         signal: controller.signal,
       });
@@ -91,8 +101,19 @@ export function useWeatherDashboard() {
     } finally {
       if (sequence === requestSequence) {
         loading.value = false;
+        refreshing.value = false;
         controller = undefined;
       }
+    }
+  }
+
+  async function load(location: LocationData): Promise<void> {
+    await request(location, false);
+  }
+
+  function refresh(): void {
+    if (lastLocation.value && dashboard.value) {
+      void request(lastLocation.value, true);
     }
   }
 
@@ -107,8 +128,10 @@ export function useWeatherDashboard() {
   return {
     dashboard,
     loading,
+    refreshing,
     error,
     load,
+    refresh,
     retry,
     clear,
   };

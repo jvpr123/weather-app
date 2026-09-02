@@ -4,7 +4,7 @@ import { useWeatherDashboard } from '@/Composables/useWeatherDashboard';
 import WeatherLayout from '@/Layouts/WeatherLayout.vue';
 import type { LocationData } from '@/Types/location';
 
-const { dashboard, loading, error, load, retry } = useWeatherDashboard();
+const { dashboard, loading, refreshing, error, load, refresh, retry } = useWeatherDashboard();
 
 function selectLocation(location: LocationData): void {
   void load(location);
@@ -15,9 +15,11 @@ function selectLocation(location: LocationData): void {
   <Head title="Previsão do tempo" />
   <WeatherLayout
     :loading="loading"
+    :refreshing="refreshing"
     :dashboard="dashboard"
     :error-message="error"
     @select="selectLocation"
     @retry="retry"
+    @refresh="refresh"
   />
 </template>
