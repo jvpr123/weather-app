@@ -26,7 +26,7 @@ final class GetWeatherDashboardController extends Controller
         );
 
         return response()->json([
-            'data' => $action->execute($location)->toArray(),
+            'data' => $action->execute($location, $request->boolean('refresh'))->toArray(),
         ]);
     }
 }

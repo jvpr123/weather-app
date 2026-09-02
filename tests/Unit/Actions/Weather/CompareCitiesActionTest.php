@@ -64,7 +64,7 @@ it('compares two cities by reusing the dashboard action', function () {
 
         public function __construct(private readonly Coordinates $leftCoordinates) {}
 
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             $this->calls[] = $coordinates;
 
@@ -80,7 +80,7 @@ it('compares two cities by reusing the dashboard action', function () {
 
         public function __construct(private readonly Coordinates $leftCoordinates) {}
 
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             $this->calls[] = $coordinates;
 
@@ -114,14 +114,14 @@ it('compares two cities by reusing the dashboard action', function () {
 it('recommends a tie when both cities have the same score', function () {
     $currentProvider = new class implements CurrentWeatherProvider
     {
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             return comparisonWeather(22, 55, 2, 'Clear');
         }
     };
     $forecastProvider = new class implements ForecastProvider
     {
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             return comparisonForecast(0, 'Clear');
         }

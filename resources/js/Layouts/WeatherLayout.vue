@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeftRight, LoaderCircle, MapPin } from '@lucide/vue';
+import { ArrowLeftRight, LoaderCircle, MapPin, RefreshCw } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import BrandMark from '@/Components/BrandMark.vue';
 import HeaderNavigationLink from '@/Components/HeaderNavigationLink.vue';
@@ -23,11 +23,13 @@ import type { WeatherDashboardData } from '@/Types/weather';
 const props = defineProps<{
   dashboard: WeatherDashboardData | null;
   loading: boolean;
+  refreshing: boolean;
   errorMessage?: string | null;
 }>();
 
 const emit = defineEmits<{
   select: [location: LocationData];
+  refresh: [];
   retry: [];
 }>();
 
@@ -48,6 +50,9 @@ const {
 } = useLocationPreference((location) => emit('select', location));
 
 const theme = computed(() => props.dashboard?.theme ?? 'cloudy-night');
+const refreshButtonLabel = computed(() =>
+  props.refreshing ? 'Atualizando previsão' : 'Atualizar previsão agora',
+);
 </script>
 
 <template>
@@ -107,6 +112,29 @@ const theme = computed(() => props.dashboard?.theme ?? 'cloudy-night');
               </template>
             </LocationSearch>
           </div>
+          <div v-if="dashboard" class="group/refresh relative flex shrink-0">
+            <button
+              type="button"
+              :disabled="refreshing"
+              class="inline-flex size-[54px] items-center justify-center rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60"
+              :aria-label="refreshButtonLabel"
+              aria-describedby="weather-refresh-tooltip"
+              @click="emit('refresh')"
+            >
+              <RefreshCw
+                aria-hidden="true"
+                class="size-5"
+                :class="{ 'animate-spin motion-reduce:animate-none': refreshing }"
+              />
+            </button>
+            <span
+              id="weather-refresh-tooltip"
+              role="tooltip"
+              class="pointer-events-none absolute top-full right-0 z-30 mt-2 w-max max-w-56 translate-y-1 rounded-lg border border-white/10 bg-slate-950/95 px-3 py-2 text-xs font-medium text-slate-100 opacity-0 shadow-xl backdrop-blur transition group-hover/refresh:translate-y-0 group-hover/refresh:opacity-100 group-focus-within/refresh:translate-y-0 group-focus-within/refresh:opacity-100"
+            >
+              {{ refreshButtonLabel }}
+            </span>
+          </div>
           <HeaderNavigationLink href="/weather/compare" label="Comparar cidades">
             <ArrowLeftRight aria-hidden="true" class="size-5 shrink-0" />
           </HeaderNavigationLink>
@@ -128,6 +156,12 @@ const theme = computed(() => props.dashboard?.theme ?? 'cloudy-night');
       </section>
 
       <template v-else-if="dashboard">
+        <RequestErrorState
+          v-if="errorMessage"
+          :message="errorMessage"
+          compact
+          @retry="emit('refresh')"
+        />
         <CurrentWeatherHero :location="dashboard.location" :current="dashboard.current" />
 
         <WeatherTabs v-model="activeTab">

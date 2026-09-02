@@ -12,6 +12,11 @@ final readonly class RedisWeatherCache implements WeatherCache
         private Repository $repository,
     ) {}
 
+    public function forget(string $key): bool
+    {
+        return $this->repository->forget($key);
+    }
+
     public function remember(string $key, int $ttl, Closure $callback): mixed
     {
         return $this->repository->remember($key, max(1, $ttl), $callback);

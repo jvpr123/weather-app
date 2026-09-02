@@ -6,6 +6,8 @@ use Closure;
 
 interface WeatherCache
 {
+    public function forget(string $key): bool;
+
     /**
      * @template TValue
      *

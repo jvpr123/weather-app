@@ -37,7 +37,7 @@ function bindComparisonEndpointProviders(): void
 {
     app()->instance(CurrentWeatherProvider::class, new class implements CurrentWeatherProvider
     {
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             $isLeft = $coordinates->latitude === 1.0;
 
@@ -62,7 +62,7 @@ function bindComparisonEndpointProviders(): void
 
     app()->instance(ForecastProvider::class, new class implements ForecastProvider
     {
-        public function forecast(Coordinates $coordinates): ForecastData
+        public function forecast(Coordinates $coordinates, bool $forceRefresh = false): ForecastData
         {
             $isLeft = $coordinates->latitude === 1.0;
 
@@ -130,7 +130,7 @@ it('validates both comparison locations', function (array $overrides, array $err
 it('returns a sanitized error when comparison weather is unavailable', function () {
     app()->instance(CurrentWeatherProvider::class, new class implements CurrentWeatherProvider
     {
-        public function current(Coordinates $coordinates): CurrentWeatherData
+        public function current(Coordinates $coordinates, bool $forceRefresh = false): CurrentWeatherData
         {
             throw WeatherProviderException::rateLimited();
         }

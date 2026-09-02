@@ -44,7 +44,7 @@ it('caches identical geocoding searches', function () {
     Http::assertSentCount(1);
 });
 
-it('caches current weather by normalized coordinates', function () {
+it('caches current weather and can force a refresh', function () {
     Http::fake(['*' => Http::response([
         'weather' => [[
             'id' => 800,
@@ -72,12 +72,14 @@ it('caches current weather by normalized coordinates', function () {
 
     $first = $provider->current($coordinates);
     $second = $provider->current($coordinates);
+    $refreshed = $provider->current($coordinates, forceRefresh: true);
 
-    expect($second)->toEqual($first);
-    Http::assertSentCount(1);
+    expect($second)->toEqual($first)
+        ->and($refreshed)->toEqual($first);
+    Http::assertSentCount(2);
 });
 
-it('caches forecast by normalized coordinates', function () {
+it('caches forecast and can force a refresh', function () {
     Http::fake(['*' => Http::response([
         'list' => [[
             'dt' => 1_725_194_400,
@@ -101,7 +103,9 @@ it('caches forecast by normalized coordinates', function () {
 
     $first = $provider->forecast($coordinates);
     $second = $provider->forecast($coordinates);
+    $refreshed = $provider->forecast($coordinates, forceRefresh: true);
 
-    expect($second)->toEqual($first);
-    Http::assertSentCount(1);
+    expect($second)->toEqual($first)
+        ->and($refreshed)->toEqual($first);
+    Http::assertSentCount(2);
 });
