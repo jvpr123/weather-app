@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Location\ReverseGeocodeController;
 use App\Http\Controllers\Location\SearchLocationsController;
+use App\Http\Controllers\Weather\GetWeatherDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,3 +15,6 @@ Route::get('/locations/search', SearchLocationsController::class)
 
 Route::get('/locations/reverse', ReverseGeocodeController::class)
     ->name('locations.reverse');
+
+Route::get('/weather/dashboard', GetWeatherDashboardController::class)
+    ->name('weather.dashboard');

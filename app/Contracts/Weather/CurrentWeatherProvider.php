@@ -2,7 +2,10 @@
 
 namespace App\Contracts\Weather;
 
+use App\DTOs\Location\Coordinates;
+use App\DTOs\Weather\CurrentWeatherData;
+
 interface CurrentWeatherProvider
 {
-    // The current weather capability is introduced in Epic 3.
+    public function current(Coordinates $coordinates): CurrentWeatherData;
 }
