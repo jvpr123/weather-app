@@ -110,6 +110,7 @@ it('normalizes three-hour forecast periods without daily aggregation', function 
         && str_contains($request->url(), 'units=metric')
         && str_contains($request->url(), 'lang=pt_br')
     );
+    Http::assertSentCount(1);
 });
 
 it('supports an empty forecast period list', function () {

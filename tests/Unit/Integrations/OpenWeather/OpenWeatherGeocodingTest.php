@@ -68,6 +68,7 @@ it('normalizes OpenWeather geocoding results', function () {
         && str_contains($request->url(), 'q=S%C3%A3o%20Paulo')
         && str_contains($request->url(), 'limit=5')
     );
+    Http::assertSentCount(1);
 });
 
 it('caps the external result limit', function () {
@@ -104,6 +105,7 @@ it('normalizes an OpenWeather reverse geocoding result', function () {
         && str_contains($request->url(), 'lon=-46.6333')
         && str_contains($request->url(), 'limit=1')
     );
+    Http::assertSentCount(1);
 });
 
 it('returns null when reverse geocoding finds no location', function () {
