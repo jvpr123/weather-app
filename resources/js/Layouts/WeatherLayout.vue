@@ -6,8 +6,10 @@ import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
 import CurrentWeatherHero from '@/Components/Weather/CurrentWeatherHero.vue';
 import DailyForecast from '@/Components/Weather/DailyForecast.vue';
+import ForecastSkeleton from '@/Components/Weather/ForecastSkeleton.vue';
 import HourlyForecast from '@/Components/Weather/HourlyForecast.vue';
 import WeatherMetrics from '@/Components/Weather/WeatherMetrics.vue';
+import WeatherHeroSkeleton from '@/Components/Weather/WeatherHeroSkeleton.vue';
 import WeatherTabs from '@/Components/Weather/WeatherTabs.vue';
 import type { WeatherTab } from '@/Components/Weather/WeatherTabs.vue';
 import { useGeolocation } from '@/Composables/useGeolocation';
@@ -146,18 +148,15 @@ async function useCurrentLocation(): Promise<void> {
 
       <section
         v-if="loading"
-        class="flex flex-1 items-center justify-center"
+        class="flex-1"
         aria-live="polite"
+        aria-busy="true"
       >
-        <div class="text-center">
-          <span
-            aria-hidden="true"
-            class="mx-auto block size-10 animate-spin rounded-full border-2 border-cyan-100/20 border-t-cyan-100"
-          />
-          <p class="mt-5 text-sm font-semibold tracking-[0.18em] text-cyan-100 uppercase">
-            Carregando previsão
-          </p>
-        </div>
+        <p class="sr-only">
+          Carregando previsão do tempo
+        </p>
+        <WeatherHeroSkeleton />
+        <ForecastSkeleton />
       </section>
 
       <template v-else-if="dashboard">

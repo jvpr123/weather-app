@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
+import LocationSearchSkeleton from '@/Components/Location/LocationSearchSkeleton.vue';
 import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
 import { Search } from '@lucide/vue';
@@ -38,8 +39,7 @@ const activeOptionId = computed(() => activeIndex.value >= 0
 
 const showPanel = computed(() => open.value && props.modelValue.trim().length >= 2);
 const showResultsPanel = computed(() => showPanel.value
-  && !loading.value
-  && (error.value !== null || isEmpty.value || results.value.length > 0));
+  && (loading.value || error.value !== null || isEmpty.value || results.value.length > 0));
 
 watch(
   () => props.modelValue,
@@ -151,13 +151,6 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         @keydown.esc="close"
       >
 
-      <span
-        v-if="loading"
-        aria-label="Buscando cidades"
-        class="absolute top-1/2 size-5 -translate-y-1/2 animate-spin rounded-full border-2 border-white/25 border-t-cyan-200"
-        :class="$slots.trailing ? 'right-16' : 'right-4'"
-      />
-
       <div
         v-if="$slots.trailing"
         class="absolute inset-y-px right-px flex items-stretch"
@@ -171,8 +164,10 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
       class="absolute z-20 w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl shadow-black/30 backdrop-blur-xl"
       :class="placement === 'top' ? 'bottom-full mb-2' : 'mt-2'"
     >
+      <LocationSearchSkeleton v-if="loading" />
+
       <p
-        v-if="error"
+        v-else-if="error"
         role="alert"
         class="px-4 py-4 text-sm text-rose-200"
       >
