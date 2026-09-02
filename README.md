@@ -14,6 +14,7 @@ The interface is currently presented in Brazilian Portuguese, and OpenWeather re
 
 - Search locations by city name with debouncing, keyboard navigation, and explicit loading, empty, and error states.
 - Use browser geolocation with manual search as a permanent fallback.
+- Restore the last selected location from browser storage and, when location permission is already granted, offer to switch if the user has moved.
 - Resolve coordinates back to a human-readable location.
 - Display current temperature, condition, humidity, pressure, wind, and apparent temperature.
 - Show scrollable three-hour forecast periods and an aggregated daily forecast.
@@ -271,6 +272,7 @@ Weather data is read frequently but changes less often than a user can request i
 ## Trade-offs
 
 - Weather and comparison data are requested on demand and are not persisted as historical records.
+- The last selected location is stored only in the browser's `localStorage`, not by IP or in the backend. Clearing site data resets this preference.
 - Forecasts use OpenWeather's five-day, three-hour product; the application does not provide long-range forecasting.
 - The Outdoor Score uses fixed, transparent rules and is not personalized for activity, health, age, or user preference.
 - City comparison performs the dashboard use case for both cities. Cache hits reduce duplicate external work, but uncached comparisons require multiple provider calls.
