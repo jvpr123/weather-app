@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { LoaderCircle, MapPin } from '@lucide/vue';
+import { ArrowLeftRight, LoaderCircle, MapPin } from '@lucide/vue';
+import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
@@ -96,28 +97,50 @@ async function useCurrentLocation(): Promise<void> {
             <LocationSearch
               v-model="query"
               @select="selectLocation"
-            />
+            >
+              <template #trailing>
+                <div class="group/location relative flex h-full items-stretch">
+                  <button
+                    type="button"
+                    :disabled="locationRequestPending"
+                    class="inline-flex w-14 items-center justify-center rounded-r-[15px] border-l border-white/15 text-slate-300 transition hover:bg-white/10 hover:text-white focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60"
+                    :aria-label="locationButtonLabel"
+                    aria-describedby="current-location-tooltip"
+                    @click="useCurrentLocation"
+                  >
+                    <LoaderCircle
+                      v-if="locationRequestPending"
+                      aria-hidden="true"
+                      class="size-5 animate-spin motion-reduce:animate-none"
+                      :stroke-width="2"
+                    />
+                    <MapPin
+                      v-else
+                      aria-hidden="true"
+                      class="size-5"
+                    />
+                  </button>
+                  <span
+                    id="current-location-tooltip"
+                    role="tooltip"
+                    class="pointer-events-none absolute top-full right-0 z-30 mt-2 w-max max-w-56 translate-y-1 rounded-lg border border-white/10 bg-slate-950/95 px-3 py-2 text-xs font-medium text-slate-100 opacity-0 shadow-xl backdrop-blur transition group-hover/location:translate-y-0 group-hover/location:opacity-100 group-focus-within/location:translate-y-0 group-focus-within/location:opacity-100"
+                  >
+                    {{ locationButtonLabel }}
+                  </span>
+                </div>
+              </template>
+            </LocationSearch>
           </div>
-          <button
-            type="button"
-            :disabled="locationRequestPending"
-            class="inline-flex h-[54px] w-[54px] shrink-0 items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-0 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-wait disabled:opacity-60 md:w-56 md:px-5"
-            :aria-label="locationButtonLabel"
-            @click="useCurrentLocation"
+          <Link
+            href="/weather/compare"
+            class="inline-flex h-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-5"
           >
-            <LoaderCircle
-              v-if="locationRequestPending"
-              aria-hidden="true"
-              class="size-5 shrink-0 animate-spin motion-reduce:animate-none"
-              :stroke-width="2"
-            />
-            <MapPin
-              v-else
+            <ArrowLeftRight
               aria-hidden="true"
               class="size-5 shrink-0"
             />
-            <span class="hidden whitespace-nowrap md:inline">{{ locationButtonLabel }}</span>
-          </button>
+            <span class="hidden whitespace-nowrap md:inline">Comparar</span>
+          </Link>
         </div>
       </header>
 

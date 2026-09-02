@@ -140,7 +140,8 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         :aria-controls="listboxId"
         :aria-expanded="showResultsPanel"
         :aria-activedescendant="activeOptionId"
-        class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pr-12 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
+        class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
+        :class="$slots.trailing ? 'pr-28' : 'pr-12'"
         @input="updateValue"
         @focus="focused = true; open = modelValue.trim().length >= 2"
         @blur="focused = false"
@@ -153,8 +154,16 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
       <span
         v-if="loading"
         aria-label="Buscando cidades"
-        class="absolute top-1/2 right-4 size-5 -translate-y-1/2 animate-spin rounded-full border-2 border-white/25 border-t-cyan-200"
+        class="absolute top-1/2 size-5 -translate-y-1/2 animate-spin rounded-full border-2 border-white/25 border-t-cyan-200"
+        :class="$slots.trailing ? 'right-16' : 'right-4'"
       />
+
+      <div
+        v-if="$slots.trailing"
+        class="absolute inset-y-px right-px flex items-stretch"
+      >
+        <slot name="trailing" />
+      </div>
     </div>
 
     <div

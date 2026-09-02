@@ -24,7 +24,7 @@ function hasNumbers(value: Record<string, unknown>, keys: string[]): boolean {
   return keys.every((key) => typeof value[key] === 'number' && Number.isFinite(value[key]));
 }
 
-function isCurrentWeather(value: unknown): value is CurrentWeatherData {
+export function isCurrentWeatherData(value: unknown): value is CurrentWeatherData {
   if (!isRecord(value)) {
     return false;
   }
@@ -79,7 +79,7 @@ export function isWeatherDashboard(value: unknown): value is WeatherDashboardDat
   }
 
   return isLocationData(value.location)
-    && isCurrentWeather(value.current)
+    && isCurrentWeatherData(value.current)
     && Array.isArray(value.hourly)
     && value.hourly.every(isForecastPeriod)
     && Array.isArray(value.daily)

@@ -53,3 +53,9 @@ npm run build
 ```
 
 The PHP tests use Pest. They are isolated from the Sail database through an in-memory SQLite connection.
+
+## Outdoor Score
+
+The city comparison uses a weighted score based on temperature, rain probability, humidity, wind, and current weather conditions.
+
+> Outdoor Score is an application-specific heuristic created solely to provide a comparative user experience.
