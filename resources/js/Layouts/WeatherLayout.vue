@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ArrowLeftRight, LoaderCircle, MapPin } from '@lucide/vue';
-import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import BrandMark from '@/Components/BrandMark.vue';
+import HeaderNavigationLink from '@/Components/HeaderNavigationLink.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
 import RequestErrorState from '@/Components/RequestErrorState.vue';
@@ -135,14 +135,9 @@ async function useCurrentLocation(): Promise<void> {
               </template>
             </LocationSearch>
           </div>
-          <Link
-            href="/weather/compare"
-            aria-label="Comparar cidades"
-            class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
-          >
+          <HeaderNavigationLink href="/weather/compare" label="Comparar cidades">
             <ArrowLeftRight aria-hidden="true" class="size-5 shrink-0" />
-            <span class="hidden whitespace-nowrap md:inline">Comparar</span>
-          </Link>
+          </HeaderNavigationLink>
         </div>
       </header>
 
