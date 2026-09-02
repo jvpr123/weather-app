@@ -56,6 +56,23 @@ it('uses the location timezone when periods cross a local day boundary', functio
         ->and($daily[1]->date)->toBe('2026-09-02');
 });
 
+it('uses a positive timezone offset and sorts days chronologically', function () {
+    $forecast = new ForecastData([
+        period('2026-09-02 22:00:00 UTC', 20, 24),
+        period('2026-09-01 23:00:00 UTC', 17, 21),
+        period('2026-09-02 01:00:00 UTC', 18, 22),
+    ], timezoneOffset: 10_800);
+
+    $daily = (new DailyForecastService)->aggregate($forecast);
+
+    expect(array_map(fn ($day): string => $day->date, $daily))->toBe([
+        '2026-09-02',
+        '2026-09-03',
+    ])
+        ->and($daily[0]->minTemperature)->toBe(17.0)
+        ->and($daily[0]->maxTemperature)->toBe(22.0);
+});
+
 it('selects rain when it is the dominant condition', function () {
     $forecast = new ForecastData([
         period('2026-09-01 09:00:00 UTC', 18, 22, 'Clouds'),
@@ -77,6 +94,33 @@ it('breaks condition frequency ties deterministically', function () {
 
     expect((new DailyForecastService)->aggregate($forecast)[0]->dominantCondition)
         ->toBe('Rain');
+});
+
+it('uses the configured severity order when all conditions tie', function () {
+    $conditions = ['Clear', 'Clouds', 'Snow', 'Drizzle', 'Rain', 'Thunderstorm'];
+    $periods = array_map(
+        fn (string $condition, int $hour): ForecastPeriodData => period(
+            "2026-09-01 {$hour}:00:00 UTC",
+            18,
+            22,
+            $condition,
+        ),
+        $conditions,
+        [3, 6, 9, 12, 15, 18],
+    );
+
+    expect((new DailyForecastService)->aggregate(new ForecastData($periods, 0))[0]->dominantCondition)
+        ->toBe('Thunderstorm');
+});
+
+it('breaks unknown condition ties alphabetically', function () {
+    $forecast = new ForecastData([
+        period('2026-09-01 09:00:00 UTC', 18, 22, 'Haze'),
+        period('2026-09-01 12:00:00 UTC', 18, 22, 'Fog'),
+    ], timezoneOffset: 0);
+
+    expect((new DailyForecastService)->aggregate($forecast)[0]->dominantCondition)
+        ->toBe('Fog');
 });
 
 it('returns no days for an empty forecast', function () {

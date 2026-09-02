@@ -146,3 +146,26 @@ it('returns sanitized weather error responses', function (
     'network error' => [WeatherProviderException::network(), 503, 'weather_network_error', 'Não foi possível conectar ao serviço de clima.'],
     'unavailable' => [WeatherProviderException::unavailable(500), 503, 'weather_unavailable', 'Não foi possível atualizar o clima agora.'],
 ]);
+
+it('sanitizes forecast failures after current weather succeeds', function () {
+    bindDashboardWeatherProviders();
+
+    app()->instance(ForecastProvider::class, new class implements ForecastProvider
+    {
+        public function forecast(Coordinates $coordinates): ForecastData
+        {
+            throw WeatherProviderException::unavailable(500);
+        }
+    });
+
+    $response = $this->getJson('/weather/dashboard?'.dashboardQuery())
+        ->assertServiceUnavailable()
+        ->assertExactJson([
+            'code' => 'weather_unavailable',
+            'message' => 'Não foi possível atualizar o clima agora.',
+        ]);
+
+    expect($response->getContent())
+        ->not->toContain('OpenWeather')
+        ->not->toContain('temporarily unavailable');
+});

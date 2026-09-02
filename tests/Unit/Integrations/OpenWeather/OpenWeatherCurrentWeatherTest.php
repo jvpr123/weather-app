@@ -86,6 +86,7 @@ it('normalizes the current weather response', function () {
         && str_contains($request->url(), 'units=metric')
         && str_contains($request->url(), 'lang=pt_br')
     );
+    Http::assertSentCount(1);
 });
 
 it('rejects malformed current weather responses', function (Closure $mutate) {

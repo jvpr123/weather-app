@@ -2,6 +2,9 @@
 
 use App\Exceptions\WeatherProviderException;
 use App\Integrations\OpenWeather\OpenWeatherClient;
+use GuzzleHttp\Exception\ConnectTimeoutException;
+use GuzzleHttp\Psr7\Request as PsrRequest;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -60,6 +63,7 @@ it('maps provider HTTP errors to sanitized internal exceptions', function (
     int $status,
     ?int $expectedStatus,
     string $expectedMessage,
+    string $expectedCode,
 ) {
     Http::fake([
         '*' => Http::response(['message' => 'external payload containing test-api-key'], $status),
@@ -70,16 +74,17 @@ it('maps provider HTTP errors to sanitized internal exceptions', function (
         $this->fail('A WeatherProviderException was not thrown.');
     } catch (WeatherProviderException $exception) {
         expect($exception->statusCode)->toBe($expectedStatus)
+            ->and($exception->errorCode)->toBe($expectedCode)
             ->and($exception->getMessage())->toContain($expectedMessage)
             ->and($exception->getMessage())->not->toContain('test-api-key')
             ->and($exception->getMessage())->not->toContain('external payload');
     }
 })->with([
-    'authentication' => [401, 401, 'authentication'],
-    'not found' => [404, 404, 'not found'],
-    'rate limit' => [429, 429, 'rate limit'],
-    'provider unavailable' => [500, 500, 'temporarily unavailable'],
-    'other client failure' => [422, 422, 'rejected the request'],
+    'authentication' => [401, 401, 'authentication', WeatherProviderException::UNAVAILABLE],
+    'not found' => [404, 404, 'not found', WeatherProviderException::NOT_FOUND],
+    'rate limit' => [429, 429, 'rate limit', WeatherProviderException::RATE_LIMITED],
+    'provider unavailable' => [500, 500, 'temporarily unavailable', WeatherProviderException::UNAVAILABLE],
+    'other client failure' => [422, 422, 'rejected the request', WeatherProviderException::UNAVAILABLE],
 ]);
 
 it('retries transient provider failures', function () {
@@ -104,6 +109,32 @@ it('maps connection failures to a network exception', function () {
     } catch (WeatherProviderException $exception) {
         expect($exception->getMessage())->toBe('The weather provider could not be reached.')
             ->and($exception->getPrevious())->toBeNull()
+            ->and($exception->getMessage())->not->toContain('appid');
+    }
+});
+
+it('maps connection timeouts without exposing transport details', function () {
+    Http::fake(function () {
+        $request = new PsrRequest('GET', 'https://api.openweathermap.test/data');
+        $transportException = new ConnectTimeoutException(
+            'cURL error 28 containing appid=test-api-key',
+            $request,
+        );
+
+        throw new ConnectionException(
+            $transportException->getMessage(),
+            previous: $transportException,
+        );
+    });
+
+    try {
+        openWeatherClient()->get('/data/2.5/weather');
+        $this->fail('A WeatherProviderException was not thrown.');
+    } catch (WeatherProviderException $exception) {
+        expect($exception->errorCode)->toBe(WeatherProviderException::TIMEOUT)
+            ->and($exception->getMessage())->toBe('The weather provider request timed out.')
+            ->and($exception->getPrevious())->toBeNull()
+            ->and($exception->getMessage())->not->toContain('cURL')
             ->and($exception->getMessage())->not->toContain('appid');
     }
 });

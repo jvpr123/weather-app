@@ -6,6 +6,7 @@ use App\DTOs\Location\Coordinates;
 use App\DTOs\Weather\CurrentWeatherData;
 use App\DTOs\Weather\ForecastData;
 use App\DTOs\Weather\ForecastPeriodData;
+use App\Exceptions\WeatherProviderException;
 use Inertia\Testing\AssertableInertia as Assert;
 
 function comparisonEndpointQuery(array $overrides = []): string
@@ -83,6 +84,7 @@ it('renders the city comparison page', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Weather/Compare')
+            ->missing('apiKey')
         );
 });
 
@@ -120,3 +122,24 @@ it('validates both comparison locations', function (array $overrides, array $err
     'invalid right country' => [['right' => ['country' => 'BRA']], ['right.country']],
     'invalid right longitude' => [['right' => ['longitude' => 181]], ['right.longitude']],
 ]);
+
+it('returns a sanitized error when comparison weather is unavailable', function () {
+    app()->instance(CurrentWeatherProvider::class, new class implements CurrentWeatherProvider
+    {
+        public function current(Coordinates $coordinates): CurrentWeatherData
+        {
+            throw WeatherProviderException::rateLimited();
+        }
+    });
+
+    $response = $this->getJson('/weather/compare/results?'.comparisonEndpointQuery())
+        ->assertTooManyRequests()
+        ->assertExactJson([
+            'code' => 'weather_rate_limited',
+            'message' => 'O serviço de clima está ocupado. Tente novamente em instantes.',
+        ]);
+
+    expect($response->getContent())
+        ->not->toContain('OpenWeather')
+        ->not->toContain('rate limit');
+});
