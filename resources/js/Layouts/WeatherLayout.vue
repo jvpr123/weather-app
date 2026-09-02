@@ -3,6 +3,7 @@ import { ArrowLeftRight, LoaderCircle, MapPin } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import BrandMark from '@/Components/BrandMark.vue';
 import HeaderNavigationLink from '@/Components/HeaderNavigationLink.vue';
+import LocationPreferencePrompt from '@/Components/Location/LocationPreferencePrompt.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
 import RequestErrorState from '@/Components/RequestErrorState.vue';
@@ -15,8 +16,7 @@ import WeatherMetrics from '@/Components/Weather/WeatherMetrics.vue';
 import WeatherHeroSkeleton from '@/Components/Weather/WeatherHeroSkeleton.vue';
 import WeatherTabs from '@/Components/Weather/WeatherTabs.vue';
 import type { WeatherTab } from '@/Components/Weather/WeatherTabs.vue';
-import { useGeolocation } from '@/Composables/useGeolocation';
-import { useReverseGeocoding } from '@/Composables/useReverseGeocoding';
+import { useLocationPreference } from '@/Composables/useLocationPreference';
 import type { LocationData } from '@/Types/location';
 import type { WeatherDashboardData } from '@/Types/weather';
 
@@ -33,49 +33,21 @@ const emit = defineEmits<{
 
 const query = ref('');
 const activeTab = ref<WeatherTab>('current');
-const { status, coordinates, request, reset: resetGeolocation } = useGeolocation();
 const {
-  loading: resolvingLocation,
-  resolve: resolveLocation,
-  clear: clearLocationResolution,
-} = useReverseGeocoding();
+  status,
+  coordinates,
+  resolvingLocation,
+  selectedLocation,
+  suggestedLocation,
+  locationRequestPending,
+  locationButtonLabel,
+  selectLocation,
+  useCurrentLocation,
+  keepSelectedLocation,
+  useSuggestedLocation,
+} = useLocationPreference((location) => emit('select', location));
 
 const theme = computed(() => props.dashboard?.theme ?? 'cloudy-night');
-const locationRequestPending = computed(
-  () => status.value === 'requesting' || resolvingLocation.value,
-);
-const locationButtonLabel = computed(() =>
-  resolvingLocation.value
-    ? 'Identificando cidade...'
-    : status.value === 'requesting'
-      ? 'Buscando localização...'
-      : 'Usar localização atual',
-);
-
-function selectLocation(location: LocationData): void {
-  clearLocationResolution();
-  resetGeolocation();
-  emit('select', location);
-}
-
-async function useCurrentLocation(): Promise<void> {
-  clearLocationResolution();
-
-  const foundCoordinates = await request();
-
-  if (!foundCoordinates) {
-    return;
-  }
-
-  const location = (await resolveLocation(foundCoordinates)) ?? {
-    name: 'Localização atual',
-    state: null,
-    country: '--',
-    ...foundCoordinates,
-  };
-
-  emit('select', location);
-}
 </script>
 
 <template>
@@ -140,6 +112,14 @@ async function useCurrentLocation(): Promise<void> {
           </HeaderNavigationLink>
         </div>
       </header>
+
+      <LocationPreferencePrompt
+        v-if="selectedLocation && suggestedLocation"
+        :saved-location="selectedLocation"
+        :current-location="suggestedLocation"
+        @keep="keepSelectedLocation"
+        @use-current="useSuggestedLocation"
+      />
 
       <section v-if="loading" class="flex-1" aria-live="polite" aria-busy="true">
         <p class="sr-only">Carregando previsão do tempo</p>
