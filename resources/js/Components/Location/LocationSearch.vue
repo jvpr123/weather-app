@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
+import LocationSearchSkeleton from '@/Components/Location/LocationSearchSkeleton.vue';
 import { useLocationSearch } from '@/Composables/useLocationSearch';
 import type { LocationData } from '@/Types/location';
 import { Search } from '@lucide/vue';
@@ -7,8 +8,12 @@ import { Search } from '@lucide/vue';
 const props = withDefaults(defineProps<{
   modelValue: string;
   placement?: 'top' | 'bottom';
+  label?: string;
+  placeholder?: string;
 }>(), {
   placement: 'bottom',
+  label: 'Buscar cidade',
+  placeholder: 'Buscar cidade...',
 });
 
 const emit = defineEmits<{
@@ -38,8 +43,7 @@ const activeOptionId = computed(() => activeIndex.value >= 0
 
 const showPanel = computed(() => open.value && props.modelValue.trim().length >= 2);
 const showResultsPanel = computed(() => showPanel.value
-  && !loading.value
-  && (error.value !== null || isEmpty.value || results.value.length > 0));
+  && (loading.value || error.value !== null || isEmpty.value || results.value.length > 0));
 
 watch(
   () => props.modelValue,
@@ -89,6 +93,9 @@ function moveActive(direction: 1 | -1): void {
   }
 
   activeIndex.value = (activeIndex.value + direction + results.value.length) % results.value.length;
+  void nextTick(() => document
+    .getElementById(`${listboxId}-option-${activeIndex.value}`)
+    ?.scrollIntoView({ block: 'nearest' }));
 }
 
 function chooseActive(): void {
@@ -96,6 +103,13 @@ function chooseActive(): void {
 
   if (location) {
     selectLocation(location);
+  }
+}
+
+function handleEnter(event: KeyboardEvent): void {
+  if (activeIndex.value >= 0) {
+    event.preventDefault();
+    chooseActive();
   }
 }
 
@@ -110,6 +124,13 @@ function handleOutsidePointer(event: PointerEvent): void {
   }
 }
 
+function handleFocusOut(event: FocusEvent): void {
+  if (root.value && !root.value.contains(event.relatedTarget as Node | null)) {
+    focused.value = false;
+    close();
+  }
+}
+
 onMounted(() => document.addEventListener('pointerdown', handleOutsidePointer));
 onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsidePointer));
 </script>
@@ -118,45 +139,44 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
   <div
     ref="root"
     class="relative w-full"
+    @focusout="handleFocusOut"
   >
     <label
       class="sr-only"
       :for="`${listboxId}-input`"
     >
-      Buscar cidade
+      {{ label }}
     </label>
 
     <div class="relative">
-      <Search class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400" />
+      <Search
+        aria-hidden="true"
+        class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400"
+      />
 
       <input
         :id="`${listboxId}-input`"
         :value="modelValue"
         type="search"
         autocomplete="off"
-        placeholder="Buscar cidade..."
+        :placeholder="placeholder"
         role="combobox"
         aria-autocomplete="list"
+        aria-haspopup="listbox"
+        :aria-busy="loading"
         :aria-controls="listboxId"
         :aria-expanded="showResultsPanel"
         :aria-activedescendant="activeOptionId"
         class="w-full rounded-2xl border border-white/15 bg-white/10 py-3.5 pl-12 text-base text-white outline-none placeholder:text-slate-400 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/10"
-        :class="$slots.trailing ? 'pr-28' : 'pr-12'"
+        :class="$slots.trailing ? 'pr-16' : 'pr-12'"
         @input="updateValue"
         @focus="focused = true; open = modelValue.trim().length >= 2"
         @blur="focused = false"
         @keydown.down.prevent="moveActive(1)"
         @keydown.up.prevent="moveActive(-1)"
-        @keydown.enter.prevent="chooseActive"
+        @keydown.enter="handleEnter"
         @keydown.esc="close"
       >
-
-      <span
-        v-if="loading"
-        aria-label="Buscando cidades"
-        class="absolute top-1/2 size-5 -translate-y-1/2 animate-spin rounded-full border-2 border-white/25 border-t-cyan-200"
-        :class="$slots.trailing ? 'right-16' : 'right-4'"
-      />
 
       <div
         v-if="$slots.trailing"
@@ -171,13 +191,22 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
       class="absolute z-20 w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl shadow-black/30 backdrop-blur-xl"
       :class="placement === 'top' ? 'bottom-full mb-2' : 'mt-2'"
     >
-      <p
-        v-if="error"
+      <LocationSearchSkeleton v-if="loading" />
+
+      <div
+        v-else-if="error"
         role="alert"
         class="px-4 py-4 text-sm text-rose-200"
       >
-        {{ error }}
-      </p>
+        <p>{{ error }}</p>
+        <button
+          type="button"
+          class="mt-3 min-h-11 rounded-lg border border-white/15 bg-white/10 px-3 py-2 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          @click="search(modelValue)"
+        >
+          Tentar novamente
+        </button>
+      </div>
 
       <p
         v-else-if="isEmpty"
@@ -192,7 +221,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
         :id="listboxId"
         role="listbox"
         aria-label="Resultados da busca"
-        class="max-h-72 overflow-y-auto p-1.5"
+        class="max-h-[min(18rem,50vh)] overflow-y-auto p-1.5"
       >
         <li
           v-for="(location, index) in results"

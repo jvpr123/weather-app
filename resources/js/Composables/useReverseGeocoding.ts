@@ -1,6 +1,7 @@
 import { onScopeDispose, ref } from 'vue';
 import type { Coordinates, LocationData } from '@/Types/location';
 import { isLocationData } from '@/Utils/location';
+import { apiRequestError, safeRequestErrorMessage } from '@/Utils/api';
 
 interface ReverseGeocodingResponse {
   data: LocationData | null;
@@ -50,7 +51,10 @@ export function useReverseGeocoding() {
       });
 
       if (!response.ok) {
-        throw new Error('Reverse geocoding request failed.');
+        throw await apiRequestError(
+          response,
+          'Não foi possível identificar sua cidade agora.',
+        );
       }
 
       const payload: unknown = await response.json();
@@ -66,7 +70,10 @@ export function useReverseGeocoding() {
       }
 
       if (sequence === requestSequence) {
-        error.value = 'Não foi possível identificar sua cidade agora.';
+        error.value = safeRequestErrorMessage(
+          reason,
+          'Não foi possível identificar sua cidade agora.',
+        );
       }
 
       return null;

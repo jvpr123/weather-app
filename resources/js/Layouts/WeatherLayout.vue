@@ -4,10 +4,13 @@ import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
 import NoLocationState from '@/Components/Location/NoLocationState.vue';
+import RequestErrorState from '@/Components/RequestErrorState.vue';
 import CurrentWeatherHero from '@/Components/Weather/CurrentWeatherHero.vue';
 import DailyForecast from '@/Components/Weather/DailyForecast.vue';
+import ForecastSkeleton from '@/Components/Weather/ForecastSkeleton.vue';
 import HourlyForecast from '@/Components/Weather/HourlyForecast.vue';
 import WeatherMetrics from '@/Components/Weather/WeatherMetrics.vue';
+import WeatherHeroSkeleton from '@/Components/Weather/WeatherHeroSkeleton.vue';
 import WeatherTabs from '@/Components/Weather/WeatherTabs.vue';
 import type { WeatherTab } from '@/Components/Weather/WeatherTabs.vue';
 import { useGeolocation } from '@/Composables/useGeolocation';
@@ -23,6 +26,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [location: LocationData];
+  retry: [];
 }>();
 
 const query = ref('');
@@ -75,7 +79,7 @@ async function useCurrentLocation(): Promise<void> {
 
 <template>
   <main
-    class="weather-layout relative isolate min-h-screen overflow-x-hidden px-4 py-4 text-[var(--weather-text)] transition-colors duration-500"
+    class="weather-layout relative isolate min-h-screen overflow-x-hidden px-3 py-3 text-[var(--weather-text)] transition-colors duration-500 sm:px-5 sm:py-4 lg:px-8"
     :class="theme"
   >
     <div
@@ -87,8 +91,8 @@ async function useCurrentLocation(): Promise<void> {
       class="absolute top-0 left-1/2 -z-10 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-[var(--weather-glow)] blur-3xl"
     />
 
-    <div class="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col">
-      <header class="relative z-20 flex flex-col gap-4 py-2 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100vh-2rem)]">
+      <header class="relative z-20 flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
         <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">
           WeatherLens
         </p>
@@ -133,7 +137,8 @@ async function useCurrentLocation(): Promise<void> {
           </div>
           <Link
             href="/weather/compare"
-            class="inline-flex h-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-5"
+            aria-label="Comparar cidades"
+            class="inline-flex size-[54px] shrink-0 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 font-semibold backdrop-blur transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 md:h-[54px] md:w-auto md:px-5"
           >
             <ArrowLeftRight
               aria-hidden="true"
@@ -146,18 +151,15 @@ async function useCurrentLocation(): Promise<void> {
 
       <section
         v-if="loading"
-        class="flex flex-1 items-center justify-center"
+        class="flex-1"
         aria-live="polite"
+        aria-busy="true"
       >
-        <div class="text-center">
-          <span
-            aria-hidden="true"
-            class="mx-auto block size-10 animate-spin rounded-full border-2 border-cyan-100/20 border-t-cyan-100"
-          />
-          <p class="mt-5 text-sm font-semibold tracking-[0.18em] text-cyan-100 uppercase">
-            Carregando previsão
-          </p>
-        </div>
+        <p class="sr-only">
+          Carregando previsão do tempo
+        </p>
+        <WeatherHeroSkeleton />
+        <ForecastSkeleton />
       </section>
 
       <template v-else-if="dashboard">
@@ -168,21 +170,23 @@ async function useCurrentLocation(): Promise<void> {
 
         <WeatherTabs v-model="activeTab">
           <section
-            v-if="activeTab === 'current'"
+            v-show="activeTab === 'current'"
             id="weather-panel-current"
             role="tabpanel"
             aria-labelledby="weather-tab-current"
-            class="py-4"
+            tabindex="0"
+            class="rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           >
             <WeatherMetrics :current="dashboard.current" />
           </section>
 
           <section
-            v-else
+            v-show="activeTab === 'forecast'"
             id="weather-panel-forecast"
             role="tabpanel"
             aria-labelledby="weather-tab-forecast"
-            class="grid gap-7 py-4"
+            tabindex="0"
+            class="grid gap-7 rounded-2xl py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
           >
             <HourlyForecast
               :periods="dashboard.hourly"
@@ -193,12 +197,17 @@ async function useCurrentLocation(): Promise<void> {
         </WeatherTabs>
       </template>
 
+      <RequestErrorState
+        v-else-if="errorMessage"
+        :message="errorMessage"
+        @retry="emit('retry')"
+      />
+
       <NoLocationState
         v-else
         :status="status"
         :coordinates="coordinates"
         :resolving-location="resolvingLocation"
-        :error-message="errorMessage"
       />
     </div>
   </main>

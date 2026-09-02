@@ -9,6 +9,7 @@ const {
   loading,
   error,
   load,
+  retry,
 } = useWeatherDashboard();
 
 function selectLocation(location: LocationData): void {
@@ -23,5 +24,6 @@ function selectLocation(location: LocationData): void {
     :dashboard="dashboard"
     :error-message="error"
     @select="selectLocation"
+    @retry="retry"
   />
 </template>

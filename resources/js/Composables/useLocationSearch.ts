@@ -1,6 +1,7 @@
 import { computed, onScopeDispose, ref } from 'vue';
 import type { LocationData } from '@/Types/location';
 import { isLocationData } from '@/Utils/location';
+import { apiRequestError, safeRequestErrorMessage } from '@/Utils/api';
 
 interface LocationSearchResponse {
   data: LocationData[];
@@ -60,7 +61,10 @@ export function useLocationSearch() {
       });
 
       if (!response.ok) {
-        throw new Error('Location search request failed.');
+        throw await apiRequestError(
+          response,
+          'Não foi possível buscar cidades agora. Tente novamente.',
+        );
       }
 
       const payload: unknown = await response.json();
@@ -80,7 +84,10 @@ export function useLocationSearch() {
 
       if (sequence === searchSequence) {
         results.value = [];
-        error.value = 'Não foi possível buscar cidades agora. Tente novamente.';
+        error.value = safeRequestErrorMessage(
+          reason,
+          'Não foi possível buscar cidades agora. Tente novamente.',
+        );
         hasSearched.value = true;
       }
     } finally {

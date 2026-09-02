@@ -2,6 +2,7 @@ import { onScopeDispose, ref } from 'vue';
 import type { CityComparisonData } from '@/Types/comparison';
 import type { LocationData } from '@/Types/location';
 import { isCityComparison } from '@/Utils/comparison';
+import { apiRequestError, safeRequestErrorMessage } from '@/Utils/api';
 
 interface ComparisonResponse {
   data: CityComparisonData;
@@ -65,7 +66,10 @@ export function useCityComparison() {
       });
 
       if (!response.ok) {
-        throw new Error('City comparison request failed.');
+        throw await apiRequestError(
+          response,
+          'Não foi possível comparar as cidades agora. Tente novamente.',
+        );
       }
 
       const payload: unknown = await response.json();
@@ -83,7 +87,10 @@ export function useCityComparison() {
       }
 
       if (sequence === requestSequence) {
-        error.value = 'Não foi possível comparar as cidades agora. Tente novamente.';
+        error.value = safeRequestErrorMessage(
+          reason,
+          'Não foi possível comparar as cidades agora. Tente novamente.',
+        );
       }
     } finally {
       if (sequence === requestSequence) {

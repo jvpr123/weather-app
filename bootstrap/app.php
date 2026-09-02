@@ -25,8 +25,20 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return response()->json([
-                'message' => 'Não foi possível consultar o serviço de clima agora.',
-            ], 503);
+                'code' => $exception->errorCode,
+                'message' => match ($exception->errorCode) {
+                    WeatherProviderException::NOT_FOUND => 'Cidade não encontrada.',
+                    WeatherProviderException::RATE_LIMITED => 'O serviço de clima está ocupado. Tente novamente em instantes.',
+                    WeatherProviderException::TIMEOUT => 'A consulta do clima demorou mais que o esperado.',
+                    WeatherProviderException::NETWORK_ERROR => 'Não foi possível conectar ao serviço de clima.',
+                    default => 'Não foi possível atualizar o clima agora.',
+                },
+            ], match ($exception->errorCode) {
+                WeatherProviderException::NOT_FOUND => 404,
+                WeatherProviderException::RATE_LIMITED => 429,
+                WeatherProviderException::TIMEOUT => 504,
+                default => 503,
+            });
         });
 
         $exceptions->shouldRenderJsonWhen(

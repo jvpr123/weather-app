@@ -2,6 +2,7 @@ import { onScopeDispose, ref } from 'vue';
 import type { LocationData } from '@/Types/location';
 import type { WeatherDashboardData } from '@/Types/weather';
 import { isWeatherDashboard } from '@/Utils/weather';
+import { apiRequestError, safeRequestErrorMessage } from '@/Utils/api';
 
 interface DashboardResponse {
   data: WeatherDashboardData;
@@ -17,6 +18,7 @@ export function useWeatherDashboard() {
   const dashboard = ref<WeatherDashboardData | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const lastLocation = ref<LocationData | null>(null);
 
   let controller: AbortController | undefined;
   let requestSequence = 0;
@@ -38,6 +40,7 @@ export function useWeatherDashboard() {
     dashboard.value = null;
     loading.value = true;
     error.value = null;
+    lastLocation.value = location;
 
     try {
       const parameters = new URLSearchParams({
@@ -57,7 +60,10 @@ export function useWeatherDashboard() {
       });
 
       if (!response.ok) {
-        throw new Error('Weather dashboard request failed.');
+        throw await apiRequestError(
+          response,
+          'Não foi possível atualizar o clima agora. Tente novamente.',
+        );
       }
 
       const payload: unknown = await response.json();
@@ -75,13 +81,22 @@ export function useWeatherDashboard() {
       }
 
       if (sequence === requestSequence) {
-        error.value = 'Não foi possível carregar a previsão agora. Tente novamente.';
+        error.value = safeRequestErrorMessage(
+          reason,
+          'Não foi possível atualizar o clima agora. Tente novamente.',
+        );
       }
     } finally {
       if (sequence === requestSequence) {
         loading.value = false;
         controller = undefined;
       }
+    }
+  }
+
+  function retry(): void {
+    if (lastLocation.value) {
+      void load(lastLocation.value);
     }
   }
 
@@ -92,6 +107,7 @@ export function useWeatherDashboard() {
     loading,
     error,
     load,
+    retry,
     clear,
   };
 }

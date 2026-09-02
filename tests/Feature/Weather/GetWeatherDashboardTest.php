@@ -6,6 +6,7 @@ use App\DTOs\Location\Coordinates;
 use App\DTOs\Weather\CurrentWeatherData;
 use App\DTOs\Weather\ForecastData;
 use App\DTOs\Weather\ForecastPeriodData;
+use App\Exceptions\WeatherProviderException;
 
 function bindDashboardWeatherProviders(): void
 {
@@ -112,4 +113,36 @@ it('validates dashboard location input', function (array $overrides, array $erro
     'invalid country' => [['country' => 'BRA'], ['country']],
     'invalid latitude' => [['latitude' => 91], ['latitude']],
     'invalid longitude' => [['longitude' => -181], ['longitude']],
+]);
+
+it('returns sanitized weather error responses', function (
+    WeatherProviderException $exception,
+    int $status,
+    string $code,
+    string $message,
+) {
+    app()->instance(CurrentWeatherProvider::class, new class($exception) implements CurrentWeatherProvider
+    {
+        public function __construct(private readonly WeatherProviderException $exception) {}
+
+        public function current(Coordinates $coordinates): CurrentWeatherData
+        {
+            throw $this->exception;
+        }
+    });
+
+    $response = $this->getJson('/weather/dashboard?'.dashboardQuery())
+        ->assertStatus($status)
+        ->assertExactJson(compact('code', 'message'));
+
+    expect($response->getContent())
+        ->not->toContain('OpenWeather')
+        ->not->toContain('authentication')
+        ->not->toContain('temporarily unavailable');
+})->with([
+    'not found' => [WeatherProviderException::notFound(), 404, 'weather_not_found', 'Cidade não encontrada.'],
+    'rate limited' => [WeatherProviderException::rateLimited(), 429, 'weather_rate_limited', 'O serviço de clima está ocupado. Tente novamente em instantes.'],
+    'timeout' => [WeatherProviderException::timeout(), 504, 'weather_timeout', 'A consulta do clima demorou mais que o esperado.'],
+    'network error' => [WeatherProviderException::network(), 503, 'weather_network_error', 'Não foi possível conectar ao serviço de clima.'],
+    'unavailable' => [WeatherProviderException::unavailable(500), 503, 'weather_unavailable', 'Não foi possível atualizar o clima agora.'],
 ]);

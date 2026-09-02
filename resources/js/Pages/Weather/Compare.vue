@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ComparisonResult from '@/Components/Comparison/ComparisonResult.vue';
 import LocationSearch from '@/Components/Location/LocationSearch.vue';
+import RequestErrorState from '@/Components/RequestErrorState.vue';
 import { useCityComparison } from '@/Composables/useCityComparison';
 import type { LocationData } from '@/Types/location';
 
@@ -50,7 +51,7 @@ function submit(): void {
 <template>
   <Head title="Comparar cidades" />
 
-  <main class="relative isolate min-h-screen overflow-x-hidden bg-slate-950 px-4 py-6 text-white">
+  <main class="relative isolate min-h-screen overflow-x-hidden bg-slate-950 px-3 py-4 text-white sm:px-5 sm:py-6 lg:px-8">
     <div
       aria-hidden="true"
       class="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_-10%,#155e75_0%,#0f3043_38%,#071923_72%,#020617_100%)]"
@@ -60,20 +61,20 @@ function submit(): void {
       class="absolute top-0 left-1/2 -z-10 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-cyan-200/10 blur-3xl"
     />
 
-    <div class="mx-auto w-full max-w-4xl">
-      <header class="flex items-center justify-between gap-4">
+    <div class="mx-auto w-full max-w-5xl">
+      <header class="flex items-center justify-between gap-3 sm:gap-4">
         <p class="text-sm font-semibold tracking-[0.22em] uppercase opacity-80">
           WeatherLens
         </p>
         <Link
           href="/"
-          class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+          class="inline-flex min-h-11 shrink-0 items-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 sm:px-4"
         >
           Voltar ao clima
         </Link>
       </header>
 
-      <section class="mx-auto mt-12 max-w-2xl text-center">
+      <section class="mx-auto mt-8 max-w-2xl text-center sm:mt-12">
         <p class="text-xs font-semibold tracking-[0.2em] text-cyan-200 uppercase">
           Condições lado a lado
         </p>
@@ -86,16 +87,18 @@ function submit(): void {
       </section>
 
       <form
-        class="mt-10"
+        class="mt-8 sm:mt-10"
         @submit.prevent="submit"
       >
         <div class="grid items-start gap-4 md:grid-cols-[1fr_auto_1fr]">
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
-            <label class="mb-3 block text-left text-xs font-semibold tracking-wider uppercase opacity-65">
+          <div class="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3 sm:rounded-3xl sm:p-4">
+            <p class="mb-3 text-left text-xs font-semibold tracking-wider uppercase opacity-75">
               Primeira cidade
-            </label>
+            </p>
             <LocationSearch
               v-model="leftQuery"
+              label="Buscar primeira cidade"
+              placeholder="Buscar primeira cidade..."
               @select="selectLeft"
             />
           </div>
@@ -106,12 +109,14 @@ function submit(): void {
             </span>
           </div>
 
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
-            <label class="mb-3 block text-left text-xs font-semibold tracking-wider uppercase opacity-65">
+          <div class="min-w-0 rounded-2xl border border-white/10 bg-white/5 p-3 sm:rounded-3xl sm:p-4">
+            <p class="mb-3 text-left text-xs font-semibold tracking-wider uppercase opacity-75">
               Segunda cidade
-            </label>
+            </p>
             <LocationSearch
               v-model="rightQuery"
+              label="Buscar segunda cidade"
+              placeholder="Buscar segunda cidade..."
               @select="selectRight"
             />
           </div>
@@ -124,23 +129,23 @@ function submit(): void {
         >
           Escolha duas cidades diferentes para comparar.
         </p>
-        <p
+        <RequestErrorState
           v-if="error"
-          role="alert"
-          class="mt-4 rounded-2xl border border-rose-200/20 bg-rose-200/10 px-4 py-3 text-center text-sm text-rose-50"
-        >
-          {{ error }}
-        </p>
+          :message="error"
+          compact
+          class="mt-4"
+          @retry="submit"
+        />
 
         <button
           type="submit"
           :disabled="!canCompare"
-          class="mx-auto mt-6 inline-flex min-h-12 min-w-48 items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
+          class="mx-auto mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-cyan-100 px-6 py-3 font-semibold text-slate-950 transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:min-w-48"
         >
           <LoaderCircle
             v-if="loading"
             aria-hidden="true"
-            class="size-5 animate-spin"
+            class="size-5 motion-safe:animate-spin"
           />
           <ArrowLeftRight
             v-else

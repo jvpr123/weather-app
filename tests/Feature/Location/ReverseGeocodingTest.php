@@ -92,6 +92,7 @@ it('does not expose reverse geocoding provider failures', function () {
     $this->getJson('/locations/reverse?latitude=51.5&longitude=-0.12')
         ->assertServiceUnavailable()
         ->assertExactJson([
-            'message' => 'Não foi possível consultar o serviço de clima agora.',
+            'code' => 'weather_unavailable',
+            'message' => 'Não foi possível atualizar o clima agora.',
         ]);
 });

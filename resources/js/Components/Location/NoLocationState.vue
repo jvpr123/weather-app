@@ -13,7 +13,6 @@ const props = defineProps<{
   status: GeolocationStatus;
   coordinates: Coordinates | null;
   resolvingLocation: boolean;
-  errorMessage?: string | null;
 }>();
 
 const content: Record<GeolocationStatus, StateContent> = {
@@ -63,16 +62,16 @@ const locationDetail = computed(() => props.coordinates
 </script>
 
 <template>
-  <section class="flex flex-1 items-center justify-center py-8 text-center">
+  <section class="flex flex-1 items-center justify-center py-8 text-center sm:py-10">
     <div class="w-full max-w-xl">
-      <div class="relative mx-auto mb-8 flex size-28 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur md:size-32">
+      <div class="relative mx-auto mb-6 flex size-24 items-center justify-center rounded-full border border-cyan-100/20 bg-cyan-100/10 shadow-2xl shadow-black/20 backdrop-blur sm:mb-8 sm:size-28 md:size-32">
         <span
           aria-hidden="true"
-          class="absolute inset-3 animate-pulse rounded-full border border-cyan-200/10"
+          class="absolute inset-3 rounded-full border border-cyan-200/10 motion-safe:animate-pulse"
         />
         <svg
           aria-hidden="true"
-          class="size-12 text-cyan-100 md:size-14"
+          class="size-10 text-cyan-100 sm:size-12 md:size-14"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -98,7 +97,7 @@ const locationDetail = computed(() => props.coordinates
         <h1 class="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl">
           {{ currentContent.title }}
         </h1>
-        <p class="mx-auto mt-4 max-w-md text-base leading-7 opacity-70">
+        <p class="mx-auto mt-4 max-w-md text-base leading-7 opacity-75">
           {{ currentContent.description }}
         </p>
         <p
@@ -109,15 +108,7 @@ const locationDetail = computed(() => props.coordinates
         </p>
       </div>
 
-      <p
-        v-if="errorMessage"
-        role="alert"
-        class="mx-auto mt-8 max-w-md rounded-2xl border border-rose-200/20 bg-rose-200/10 px-4 py-3 text-sm text-rose-50"
-      >
-        {{ errorMessage }}
-      </p>
-
-      <p class="mt-8 text-xs leading-5 opacity-50">
+      <p class="mt-6 text-xs leading-5 opacity-65 sm:mt-8">
         Sua localização é usada somente para encontrar a previsão da sua região.
       </p>
     </div>
